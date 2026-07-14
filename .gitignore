@@ -15,3 +15,5 @@
 
 # Logs
 *.log
+
+.claude/artifacts/status-pipeline.json
