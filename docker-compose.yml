@@ -1,0 +1,164 @@
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server@sha256:d01cc45e6b920eff17abc60295b8748821e09b678f0fcf54959ef37406b80203
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+    ports:
+      - "${SQL_PORT}:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd",
+             "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}",
+             "-Q", "SELECT 1", "-No"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+  
+  auth-api:
+    build:
+      context: ./AuthService
+      dockerfile: Dockerfile
+
+    container_name: auth-api
+    restart: unless-stopped
+
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      sqlserver-init:
+        condition: service_completed_successfully
+
+    ports:
+      - "${API_PORT}:8080"
+
+    environment:
+
+      ASPNETCORE_ENVIRONMENT: Docker
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver; Database=${DB_NAME}; User Id=sa; Password=${SA_PASSWORD}; TrustServerCertificate=True; Encrypt=True;
+      JwtSettings__Secret: ${JWT_SECRET}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql-tools@sha256:62556500522072535cb3df2bb5965333dded9be47000473e9e0f84118e248642
+    container_name: sqlserver-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+    command: >
+      /bin/bash -c "
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${SA_PASSWORD}
+      -Q \"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = '${DB_NAME}')
+           BEGIN CREATE DATABASE ${DB_NAME} END\"
+      "
+    restart: "no"
+
+  flyway:
+    image: flyway/flyway@sha256:94a81ca7db9a9f24fd8acd7463fa4560cb8f66aae2aa64485c27eb296f5851cf
+    container_name: flyway
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      sqlserver-init:
+        condition: service_completed_successfully
+    environment:
+      FLYWAY_URL: "jdbc:sqlserver://sqlserver:1433;databaseName=${DB_NAME};encrypt=true;trustServerCertificate=true"
+      FLYWAY_USER: "sa"
+      FLYWAY_PASSWORD: ${SA_PASSWORD}
+    volumes:
+      - ./flyway/sql:/flyway/sql
+      - ./flyway/conf:/flyway/conf
+    command: migrate
+
+  customer-order-api:
+    build:
+      context: ./CustomerOrderService
+      dockerfile: Dockerfile
+
+    container_name: customer-order-api
+    restart: unless-stopped
+
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+
+    ports:
+      - "${ORDER_API_PORT}:8000"
+
+    environment:
+      APP_NAME: CustomerOrderService
+      APP_ENV: local
+      APP_KEY: ${LARAVEL_APP_KEY}
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:${ORDER_API_PORT}
+
+      DB_CONNECTION: sqlsrv
+      DB_HOST: sqlserver
+      DB_PORT: 1433
+      DB_DATABASE: ${DB_NAME}
+      DB_USERNAME: sa
+      DB_PASSWORD: ${SA_PASSWORD}
+      DB_ENCRYPT: "yes"
+      DB_TRUST_SERVER_CERTIFICATE: "true"
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: AuthService
+      JWT_AUDIENCE: OrderFlowApp
+
+      LOG_CHANNEL: stack
+      LOG_LEVEL: debug
+      CACHE_DRIVER: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  order-flow-app:
+    build:
+      context: ./is-order-flow-app
+      dockerfile: Dockerfile
+
+    container_name: order-flow-app
+    restart: unless-stopped
+
+    depends_on:
+      auth-api:
+        condition: service_healthy
+      customer-order-api:
+        condition: service_healthy
+
+    ports:
+      - "${WEB_PORT}:4000"
+
+    environment:
+      PORT: 4000
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/ >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  sqlserver_data:

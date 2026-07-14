@@ -1,0 +1,105 @@
+@baseUrl = http://localhost:5141
+@contentType = application/json
+
+### ═══════════════════════════════════════
+### VARIABLES — reemplaza después del login
+### ═══════════════════════════════════════
+@accessToken = PEGAR_TOKEN_AQUI
+@refreshToken = PEGAR_REFRESH_TOKEN_AQUI
+
+
+### ═══════════════════════════════════════
+### 1. REGISTER — Registrar nuevo usuario
+### ═══════════════════════════════════════
+# @name register
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+{
+  "email": "admin@demo.com",
+  "password": "Admin123!",
+  "confirmPassword": "Admin123!"
+}
+{
+  "email": "test@mail.com",
+  "password": "Test1234!",
+  "confirmPassword": "Test1234!"
+}
+
+
+### ═══════════════════════════════════════
+### 2. LOGIN — Iniciar sesión
+### ═══════════════════════════════════════
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test@mail.com",
+  "password": "Test1234!"
+}
+
+
+### ═══════════════════════════════════════
+### 3. ME — Obtener usuario autenticado
+### Requiere: copiar accessToken del login
+### ═══════════════════════════════════════
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+
+
+### ═══════════════════════════════════════
+### 4. REFRESH TOKEN — Renovar access token
+### Requiere: copiar refreshToken del login
+### ═══════════════════════════════════════
+POST {{baseUrl}}/api/auth/refresh-token
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### ═══════════════════════════════════════
+### 5. REVOKE TOKEN — Invalidar refresh token
+### ═══════════════════════════════════════
+POST {{baseUrl}}/api/auth/revoke-token
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### ═══════════════════════════════════════
+### PRUEBAS DE ERROR — Validar casos límite
+### ═══════════════════════════════════════
+
+### 6. Register con email duplicado → debe dar 409
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "test@mail.com",
+  "password": "Test1234!",
+  "confirmPassword": "Test1234!"
+}
+
+
+### 7. Login con credenciales incorrectas → debe dar 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test@mail.com",
+  "password": "ContraseñaIncorrecta"
+}
+
+
+### 8. Me sin token → debe dar 401
+GET {{baseUrl}}/api/auth/me
+
+
+### 9. Me con token inválido → debe dar 401
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer token.invalido.aqui

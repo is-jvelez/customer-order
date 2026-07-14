@@ -1,0 +1,19 @@
+# Artefactos de compilacion local
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+**/*.user
+**/*.suo
+
+# Git
+.git/
+.gitignore
+
+# El mismo Dockerfile
+Dockerfile
+
+# Proyectos de test
+tests/
+

@@ -1,0 +1,169 @@
+@baseUrl = http://localhost:8000
+@contentType = application/json
+
+### ═══════════════════════════════════════
+### VARIABLE — pegar token del AuthService
+### ═══════════════════════════════════════
+@accessToken = PEGAR_TOKEN_DEL_AUTHSERVICE_AQUI
+
+
+### ═══════════════════════════════════════
+### CLIENTES
+### ═══════════════════════════════════════
+
+### 1. Listar clientes
+GET {{baseUrl}}/api/customers
+Authorization: Bearer {{accessToken}}
+
+### 2. Crear cliente
+POST {{baseUrl}}/api/customers
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Juan Pérez",
+  "email": "juan@mail.com",
+  "phone": "0991234567",
+  "address": "Av. Principal 123, Guayaquil"
+}
+
+### 3. Obtener cliente por ID
+GET {{baseUrl}}/api/customers/1
+Authorization: Bearer {{accessToken}}
+
+### 4. Editar cliente
+PUT {{baseUrl}}/api/customers/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Juan Pérez Actualizado",
+  "phone": "0999999999"
+}
+
+### 5. Eliminar cliente (soft delete: IsActive=0)
+DELETE {{baseUrl}}/api/customers/1
+Authorization: Bearer {{accessToken}}
+
+
+### ═══════════════════════════════════════
+### PEDIDOS
+### ═══════════════════════════════════════
+
+### 6. Listar pedidos (sin filtros)
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{accessToken}}
+
+### 7. Listar pedidos con filtros
+GET {{baseUrl}}/api/orders?status=Pending&per_page=10&page=1
+Authorization: Bearer {{accessToken}}
+
+### 8. Listar pedidos con rango de fechas
+GET {{baseUrl}}/api/orders?date_from=2025-01-01&date_to=2025-12-31
+Authorization: Bearer {{accessToken}}
+
+### 9. Crear pedido con items
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "customer_id": 1,
+  "notes": "Entregar en horario de oficina",
+  "items": [
+    {
+      "description": "Laptop HP 15",
+      "quantity": 1,
+      "unit_price": 899.99
+    },
+    {
+      "description": "Mouse inalámbrico",
+      "quantity": 2,
+      "unit_price": 25.00
+    }
+  ]
+}
+
+### 10. Obtener pedido por ID
+GET {{baseUrl}}/api/orders/1
+Authorization: Bearer {{accessToken}}
+
+### 11. Editar pedido (solo notes)
+PUT {{baseUrl}}/api/orders/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "notes": "Nota actualizada"
+}
+
+### 12. Marcar pedido como completado
+PATCH {{baseUrl}}/api/orders/1/complete
+Authorization: Bearer {{accessToken}}
+
+### 13. Marcar pedido como cancelado
+PATCH {{baseUrl}}/api/orders/1/cancel
+Authorization: Bearer {{accessToken}}
+
+### 14. Eliminar pedido
+DELETE {{baseUrl}}/api/orders/1
+Authorization: Bearer {{accessToken}}
+
+
+### ═══════════════════════════════════════
+### DASHBOARD
+### ═══════════════════════════════════════
+
+### 15. Estadísticas generales
+GET {{baseUrl}}/api/dashboard/stats
+Authorization: Bearer {{accessToken}}
+
+### 16. Pedidos por día (últimos 30 días)
+GET {{baseUrl}}/api/dashboard/orders-by-day
+Authorization: Bearer {{accessToken}}
+
+### 17. Pedidos por mes (últimos 12 meses)
+GET {{baseUrl}}/api/dashboard/orders-by-month
+Authorization: Bearer {{accessToken}}
+
+
+### ═══════════════════════════════════════
+### PRUEBAS DE ERROR
+### ═══════════════════════════════════════
+
+### 18. Sin token → debe dar 401
+GET {{baseUrl}}/api/customers
+
+### 19. Token inválido → debe dar 401
+GET {{baseUrl}}/api/customers
+Authorization: Bearer token.invalido.aqui
+
+### 20. Cliente inexistente → debe dar 404
+GET {{baseUrl}}/api/customers/99999
+Authorization: Bearer {{accessToken}}
+
+### 21. Email duplicado → debe dar 409
+POST {{baseUrl}}/api/customers
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Duplicado",
+  "email": "juan@mail.com"
+}
+
+### 22. Pedido con customer inexistente → debe dar 422
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "customer_id": 99999,
+  "items": [
+    { "description": "Test", "quantity": 1, "unit_price": 10.00 }
+  ]
+}
+
+### 23. Cambiar estado inválido (Completed → Cancelled) → debe dar 409
+PATCH {{baseUrl}}/api/orders/1/cancel
+Authorization: Bearer {{accessToken}}
