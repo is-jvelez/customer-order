@@ -29,3 +29,8 @@ Detener:
     docker compose up <nombre_servicio>
     Ejemplo:
         docker compose up flyway
+
+## Ejecutar cada proyecto
+
+http://localhost:5000/scalar/
+http://localhost:8000/docs/api#/
