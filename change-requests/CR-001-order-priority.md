@@ -79,7 +79,7 @@ Este bloque existe para que ninguna capa invente nombres. Cada agente consume el
 - Servicio HTTP: enviar `priority` en create/update y como query param en el listado filtrado.
 - **Lista de pedidos** (Image 1): nueva columna **"Prioridad"** entre "Estado" y "Total", renderizada como badge de color, reutilizando el patrón de badges existente de Estado.
 - **Filtro** (barra superior): nuevo dropdown **"Prioridad"** junto a Estado/Cliente/Fecha, con opción "Todas".
-- **Modal Nuevo/Editar Pedido** (Image 2): nuevo selector **"Prioridad"** debajo de "Notas", con **"Media" preseleccionada por defecto**.
+- **Modal Nuevo Pedido** (Image 2): nuevo selector **"Prioridad"** debajo de "Notas", con **"Media" preseleccionada por defecto**.
 - **Detalle del pedido**: mostrar el badge de prioridad junto al badge de estado.
 
 ## 5. Criterios de aceptación (verificables → convertibles en tests)

@@ -78,7 +78,7 @@ Aplicación web de gestión de **clientes y pedidos** con autenticación, compue
 
 - Los **CRs** viven en `change-requests/` y son el insumo que dispara el pipeline.
 - Los **agentes** viven en `.claude/agents/` (uno por capa) y son maquinaria reutilizable: genéricos respecto al feature, específicos respecto a la capa.
-- El **orquestador / slash command** vive en `.claude/commands/`, lee un CR y ejecuta los agentes en orden (SQL → Laravel → Angular → Testing) pasando el contrato de cada etapa a la siguiente, con checkpoints humanos entre capas.
+- El **orquestador / slash command** vive en `.claude/commands/`, lee un CR y ejecuta los agentes en orden (SQL → Laravel → Angular → Testing → Deploy) pasando el contrato de cada etapa a la siguiente, con checkpoints humanos entre capas. La etapa **Deploy** (`deploy-agent`) reconstruye y recarga las imágenes Docker de los servicios cuyo código cambió (Laravel y/o Angular no usan bind-mount: el código se copia en la imagen al buildear, así que sin este paso el entorno local sigue sirviendo la versión vieja aunque los tests pasen) y solo aplica si esas capas tuvieron cambios.
 - Un agente solo necesita conocer **su capa + los contratos vecinos**, no todo el sistema.
 
 ### Artefactos del pipeline (`.claude/artifacts/`)
