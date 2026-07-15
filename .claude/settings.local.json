@@ -3,7 +3,9 @@
     "allow": [
       "Bash(docker exec *)",
       "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 1433)",
-      "Bash(curl -s http://localhost:4200/orders)"
+      "Bash(curl -s http://localhost:4200/orders)",
+      "Bash(cd *)",
+      "Bash(sort -k9)"
     ]
   }
 }
