@@ -14,6 +14,7 @@ use App\Domain\Orders\Exceptions\InvalidOrderStatusException;
 use App\Domain\Orders\Exceptions\OrderNotFoundException;
 use App\Domain\Orders\Interfaces\IOrderRepository;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 
 class OrderService implements IOrderService
 {
@@ -52,6 +53,7 @@ class OrderService implements IOrderService
             createdAt:  null,
             updatedAt:  null,
             items:      [],
+            priority:   $dto->priority !== null ? OrderPriority::from($dto->priority) : OrderPriority::Medium,
         );
 
         $items = array_map(
@@ -84,6 +86,7 @@ class OrderService implements IOrderService
             createdAt:  $order->createdAt,
             updatedAt:  $order->updatedAt,
             items:      $order->items,
+            priority:   $dto->priority !== null ? OrderPriority::from($dto->priority) : $order->priority,
         );
 
         return $this->orderRepository->update($updated);
@@ -119,6 +122,7 @@ class OrderService implements IOrderService
             createdAt:  $order->createdAt,
             updatedAt:  $order->updatedAt,
             items:      $order->items,
+            priority:   $order->priority,
         ));
     }
 

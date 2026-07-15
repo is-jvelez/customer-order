@@ -1,0 +1,40 @@
+{
+    "success": true,
+    "data": {
+        "items": [
+            {
+                "id": 1,
+                "customer_id": 1,
+                "status": "Pending",
+                "total": 130.5,
+                "notes": "Golden order",
+                "created_at": "2026-01-05 10:00:00",
+                "updated_at": "2026-01-05 10:05:00",
+                "items": [
+                    {
+                        "id": 1,
+                        "description": "Item A",
+                        "quantity": 2,
+                        "unit_price": 15.25
+                    },
+                    {
+                        "id": 2,
+                        "description": "Item B",
+                        "quantity": 1,
+                        "unit_price": 100
+                    }
+                ]
+            }
+        ],
+        "pagination": {
+            "total": 1,
+            "per_page": 15,
+            "current_page": 1,
+            "last_page": 1,
+            "from": 1,
+            "to": 1
+        }
+    },
+    "message": "Pedidos obtenidos exitosamente",
+    "errors": []
+}

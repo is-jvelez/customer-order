@@ -8,6 +8,7 @@ import { PaginatedResponse } from '../../../core/models/pagination.model';
 import { Order, CreateOrderRequest, OrderFilterParams } from '../domain/models/order.model';
 import { OrderItem } from '../domain/models/order-item.model';
 import { ORDER_ROUTES } from '../../../shared/constants/api-routes.constants';
+import { OrderPriority } from '../../../shared/constants/app.constants';
 
 // ── Raw shapes returned by the backend ──────────────────────────────────────
 
@@ -22,6 +23,7 @@ interface RawOrder {
   id: number;
   customer_id: number;
   status: string;
+  priority: number;
   total: number;
   notes: string | null;
   created_at: string;
@@ -58,6 +60,7 @@ function mapOrder(raw: RawOrder): Order {
     customerId: raw.customer_id,
     customerName: null,
     status: raw.status as Order['status'],
+    priority: raw.priority as OrderPriority,
     total: raw.total,
     notes: raw.notes,
     createdAt: raw.created_at,
@@ -90,6 +93,7 @@ export class OrderRepository implements IOrderRepository {
     if (params.customer_id) httpParams = httpParams.set('customer_id', params.customer_id);
     if (params.date_from) httpParams = httpParams.set('date_from', params.date_from);
     if (params.date_to) httpParams = httpParams.set('date_to', params.date_to);
+    if (params.priority) httpParams = httpParams.set('priority', params.priority);
     return this.http
       .get<ApiResponse<RawOrdersResponse>>(ORDER_ROUTES.BASE, { params: httpParams })
       .pipe(map((res) => ({ ...res, data: res.data ? mapOrdersPage(res.data) : null })));
@@ -102,7 +106,7 @@ export class OrderRepository implements IOrderRepository {
   }
 
   create(data: CreateOrderRequest): Observable<ApiResponse<Order>> {
-    const body = {
+    const body: Record<string, unknown> = {
       customer_id: data.customerId,
       notes: data.notes ?? null,
       items: data.items.map((i) => ({
@@ -111,6 +115,10 @@ export class OrderRepository implements IOrderRepository {
         unit_price: i.price,
       })),
     };
+    // Contrato CR-001: priority es opcional en el body; si se omite, el backend persiste Media (2).
+    if (data.priority !== undefined && data.priority !== null) {
+      body['priority'] = data.priority;
+    }
     return this.http
       .post<ApiResponse<RawOrder>>(ORDER_ROUTES.BASE, body)
       .pipe(map((res) => ({ ...res, data: res.data ? mapOrder(res.data) : null })));

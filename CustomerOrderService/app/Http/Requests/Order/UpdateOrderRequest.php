@@ -14,7 +14,15 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'notes' => ['sometimes', 'nullable', 'string', 'max:500'],
+            'notes'    => ['sometimes', 'nullable', 'string', 'max:500'],
+            'priority' => ['sometimes', 'nullable', 'integer', 'in:1,2,3'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'priority.in' => 'La prioridad debe ser 1 (Baja), 2 (Media) o 3 (Alta).',
         ];
     }
 }

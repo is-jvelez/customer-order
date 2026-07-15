@@ -50,6 +50,7 @@ trait UsesCustomerOrderSqliteSchema
             $table->string('Status', 30);
             $table->decimal('Total', 12, 2)->default(0);
             $table->string('Notes', 500)->nullable();
+            $table->unsignedTinyInteger('Priority')->default(2);
             $table->dateTime('CreatedAt')->nullable();
             $table->dateTime('UpdatedAt')->nullable();
         });

@@ -26,6 +26,9 @@ class EloquentOrderRepository implements IOrderRepository
         if (!empty($filters['customer_id'])) {
             $query->where('CustomerId', (int) $filters['customer_id']);
         }
+        if (!empty($filters['priority'])) {
+            $query->where('Priority', (int) $filters['priority']);
+        }
         if (!empty($filters['date_from'])) {
             $query->where('CreatedAt', '>=', $filters['date_from']);
         }
@@ -67,6 +70,7 @@ class EloquentOrderRepository implements IOrderRepository
                 'CustomerId' => $order->customerId,
                 'Status'     => $order->status->value,
                 'Notes'      => $order->notes,
+                'Priority'   => $order->priority->value,
             ]);
 
             foreach ($items as $item) {
@@ -91,8 +95,9 @@ class EloquentOrderRepository implements IOrderRepository
         $model = OrderModel::findOrFail($order->id);
 
         $model->update([
-            'Status' => $order->status->value,
-            'Notes'  => $order->notes,
+            'Status'   => $order->status->value,
+            'Notes'    => $order->notes,
+            'Priority' => $order->priority->value,
         ]);
 
         $model->refresh();

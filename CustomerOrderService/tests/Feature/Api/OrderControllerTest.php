@@ -9,6 +9,7 @@ use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\Exceptions\InvalidOrderStatusException;
 use App\Domain\Orders\Exceptions\OrderNotFoundException;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use Mockery\MockInterface;
 use Tests\Support\AuthenticatesWithJwt;
 use Tests\TestCase;
@@ -42,6 +43,32 @@ class OrderControllerTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.pagination.total', 1)
             ->assertJsonPath('data.items.0.status', 'Pending');
+    }
+
+    public function test_Index_ShouldForwardPriorityFilter_WhenQueryParamIsProvided(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getAll')
+                ->once()
+                ->with($this->callback(fn(array $filters): bool => ($filters['priority'] ?? null) === '3'))
+                ->andReturn([
+                    'items' => [$this->makeOrder(1, OrderStatus::Pending)],
+                    'pagination' => [
+                        'total' => 1,
+                        'per_page' => 15,
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'from' => 1,
+                        'to' => 1,
+                    ],
+                ]);
+        });
+
+        $response = $this->getJson('/api/orders?priority=3', $this->apiHeaders());
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
     }
 
     public function test_Store_ShouldReturn201_WhenPayloadIsValid(): void
@@ -104,6 +131,60 @@ class OrderControllerTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
+    /** @dataProvider invalidPriorityProvider */
+    public function test_Store_ShouldReturn422_WhenPriorityIsInvalid(mixed $invalidPriority): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('create');
+        });
+
+        $response = $this->postJson('/api/orders', [
+            'customer_id' => 1,
+            'priority' => $invalidPriority,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ], $this->apiHeaders());
+
+        $response->assertStatus(422)
+            ->assertJsonPath('success', false);
+    }
+
+    public static function invalidPriorityProvider(): array
+    {
+        return [
+            'zero' => [0],
+            'four' => [4],
+            'nine' => [9],
+            'non_numeric' => ['x'],
+        ];
+    }
+
+    public function test_Store_ShouldReturn201WithPriority_WhenPriorityIsValid(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('create')
+                ->once()
+                ->andReturn($this->makeOrder(9, OrderStatus::Pending, OrderPriority::High));
+        });
+
+        $payload = [
+            'customer_id' => 1,
+            'priority' => 3,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ];
+
+        $response = $this->postJson('/api/orders', $payload, $this->apiHeaders());
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.priority', 3);
+    }
+
     public function test_Complete_ShouldReturn409_WhenStatusTransitionIsInvalid(): void
     {
         $this->authenticateWithJwt();
@@ -151,7 +232,7 @@ class OrderControllerTest extends TestCase
             ->assertJsonPath('success', true);
     }
 
-    private function makeOrder(int $id, OrderStatus $status): Order
+    private function makeOrder(int $id, OrderStatus $status, OrderPriority $priority = OrderPriority::Medium): Order
     {
         return new Order(
             id: $id,
@@ -170,6 +251,7 @@ class OrderControllerTest extends TestCase
                     unitPrice: 45.5,
                 ),
             ],
+            priority: $priority,
         );
     }
 }

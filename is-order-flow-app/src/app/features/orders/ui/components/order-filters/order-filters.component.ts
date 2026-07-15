@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { Customer } from '../../../../customers/domain/models/customer.model';
 import { OrderFilterParams } from '../../../domain/models/order.model';
-import { ORDER_STATUSES } from '../../../../../shared/constants/app.constants';
+import { ORDER_STATUSES, ORDER_PRIORITIES, OrderPriority } from '../../../../../shared/constants/app.constants';
+import { PriorityLabelPipe } from '../../../../../shared/pipes/priority-label.pipe';
 
 @Component({
   selector: 'app-order-filters',
@@ -20,6 +21,7 @@ import { ORDER_STATUSES } from '../../../../../shared/constants/app.constants';
     MatDatepickerModule,
     MatInputModule,
     MatNativeDateModule,
+    PriorityLabelPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -40,6 +42,16 @@ import { ORDER_STATUSES } from '../../../../../shared/constants/app.constants';
           <mat-option value="">Todos</mat-option>
           @for (c of customers(); track c.id) {
             <mat-option [value]="c.id">{{ c.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option [value]="null">Todas</mat-option>
+          @for (p of priorities; track p) {
+            <mat-option [value]="p">{{ p | priorityLabel }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -77,12 +89,14 @@ export class OrderFiltersComponent {
   private readonly fb = inject(FormBuilder);
 
   protected readonly statuses = ORDER_STATUSES;
+  protected readonly priorities = ORDER_PRIORITIES;
 
   protected readonly form = this.fb.group({
     status: [''],
     customer_id: [null as number | null],
     date_from: [null as Date | null],
     date_to: [null as Date | null],
+    priority: [null as OrderPriority | null],
   });
 
   applyFilters(): void {
@@ -92,11 +106,12 @@ export class OrderFiltersComponent {
     if (v.customer_id) params.customer_id = v.customer_id;
     if (v.date_from) params.date_from = this.formatDate(v.date_from);
     if (v.date_to) params.date_to = this.formatDate(v.date_to);
+    if (v.priority) params.priority = v.priority;
     this.filtersChanged.emit(params);
   }
 
   clearFilters(): void {
-    this.form.reset({ status: '', customer_id: null, date_from: null, date_to: null });
+    this.form.reset({ status: '', customer_id: null, date_from: null, date_to: null, priority: null });
     this.filtersChanged.emit({});
   }
 

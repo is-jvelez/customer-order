@@ -7,6 +7,7 @@ use App\Domain\Customers\ValueObjects\CustomerEmail;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use PHPUnit\Framework\TestCase;
 
 class DomainEntitiesTest extends TestCase
@@ -51,6 +52,7 @@ class DomainEntitiesTest extends TestCase
             createdAt: '2026-01-02 11:00:00',
             updatedAt: '2026-01-02 11:30:00',
             items: [$item],
+            priority: OrderPriority::Low,
         );
 
         $this->assertSame(1, $order->id);
@@ -58,8 +60,24 @@ class DomainEntitiesTest extends TestCase
         $this->assertSame(OrderStatus::Pending, $order->status);
         $this->assertSame(76.5, $order->total);
         $this->assertSame('Urgent', $order->notes);
+        $this->assertSame(OrderPriority::Low, $order->priority);
         $this->assertCount(1, $order->items);
         $this->assertSame('Keyboard', $order->items[0]->description);
+    }
+
+    public function test_Order_ShouldDefaultPriorityToMedium_WhenNotProvided(): void
+    {
+        $order = new Order(
+            id: 2,
+            customerId: 5,
+            status: OrderStatus::Pending,
+            total: 0,
+            notes: null,
+            createdAt: null,
+            updatedAt: null,
+        );
+
+        $this->assertSame(OrderPriority::Medium, $order->priority);
     }
 }
 

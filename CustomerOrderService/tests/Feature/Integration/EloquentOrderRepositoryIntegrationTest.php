@@ -5,6 +5,7 @@ namespace Tests\Feature\Integration;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Infrastructure\Persistence\Repositories\EloquentOrderRepository;
 use Illuminate\Support\Facades\DB;
 use Tests\Support\Database\UsesCustomerOrderSqliteSchema;
@@ -48,7 +49,124 @@ class EloquentOrderRepositoryIntegrationTest extends TestCase
         $this->assertNotNull($found);
         $this->assertSame($customerId, $found->customerId);
         $this->assertSame(OrderStatus::Pending, $found->status);
+        $this->assertSame(OrderPriority::Medium, $found->priority);
         $this->assertCount(2, $found->items);
+    }
+
+    public function test_Create_ShouldPersistDefaultPriority_WhenOrderDoesNotSpecifyIt(): void
+    {
+        $customerId = $this->seedCustomer('priority-default@example.com');
+        $order = new Order(
+            id: null,
+            customerId: $customerId,
+            status: OrderStatus::Pending,
+            total: 0,
+            notes: null,
+            createdAt: null,
+            updatedAt: null,
+            items: [],
+        );
+
+        $created = $this->repository->create($order, []);
+
+        $this->assertSame(OrderPriority::Medium, $created->priority);
+        $this->assertSame(2, DB::table('Orders')->where('Id', $created->id)->value('Priority'));
+    }
+
+    public function test_Create_ShouldPersistExplicitPriority_WhenOrderSpecifiesHigh(): void
+    {
+        $customerId = $this->seedCustomer('priority-high@example.com');
+        $order = new Order(
+            id: null,
+            customerId: $customerId,
+            status: OrderStatus::Pending,
+            total: 0,
+            notes: null,
+            createdAt: null,
+            updatedAt: null,
+            items: [],
+            priority: OrderPriority::High,
+        );
+
+        $created = $this->repository->create($order, []);
+
+        $this->assertSame(OrderPriority::High, $created->priority);
+        $this->assertSame(3, DB::table('Orders')->where('Id', $created->id)->value('Priority'));
+    }
+
+    public function test_Update_ShouldPersistPriority_WhenOrderSpecifiesLow(): void
+    {
+        $customerId = $this->seedCustomer('priority-update@example.com');
+        DB::table('Orders')->insert([
+            'CustomerId' => $customerId,
+            'Status' => 'Pending',
+            'Total' => 10,
+            'Notes' => null,
+            'Priority' => 2,
+            'CreatedAt' => now()->toDateTimeString(),
+            'UpdatedAt' => now()->toDateTimeString(),
+        ]);
+        $orderId = (int) DB::getPdo()->lastInsertId();
+
+        $updated = $this->repository->update(new Order(
+            id: $orderId,
+            customerId: $customerId,
+            status: OrderStatus::Pending,
+            total: 10,
+            notes: null,
+            createdAt: null,
+            updatedAt: null,
+            items: [],
+            priority: OrderPriority::Low,
+        ));
+
+        $this->assertSame(OrderPriority::Low, $updated->priority);
+        $this->assertSame(1, DB::table('Orders')->where('Id', $orderId)->value('Priority'));
+    }
+
+    public function test_FindAll_ShouldFilterByPriority_WhenPriorityFilterIsProvided(): void
+    {
+        $customerId = $this->seedCustomer('priority-filter@example.com');
+        $now = now()->toDateTimeString();
+
+        DB::table('Orders')->insert([
+            [
+                'CustomerId' => $customerId,
+                'Status' => 'Pending',
+                'Total' => 10,
+                'Notes' => 'low',
+                'Priority' => 1,
+                'CreatedAt' => $now,
+                'UpdatedAt' => $now,
+            ],
+            [
+                'CustomerId' => $customerId,
+                'Status' => 'Pending',
+                'Total' => 20,
+                'Notes' => 'medium',
+                'Priority' => 2,
+                'CreatedAt' => $now,
+                'UpdatedAt' => $now,
+            ],
+            [
+                'CustomerId' => $customerId,
+                'Status' => 'Pending',
+                'Total' => 30,
+                'Notes' => 'high',
+                'Priority' => 3,
+                'CreatedAt' => $now,
+                'UpdatedAt' => $now,
+            ],
+        ]);
+
+        $result = $this->repository->findAll(['priority' => 3]);
+
+        $this->assertCount(1, $result['items']);
+        $this->assertSame('high', $result['items'][0]->notes);
+        $this->assertSame(OrderPriority::High, $result['items'][0]->priority);
+
+        $unfiltered = $this->repository->findAll();
+        $this->assertCount(3, $unfiltered['items']);
     }
 
     public function test_FindAll_ShouldApplyFiltersAndPagination_WhenFiltersAreProvided(): void
