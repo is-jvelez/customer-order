@@ -1,6 +1,6 @@
 ---
 name: angular-agent
-description: Especialista en la capa Angular 21 (is-order-flow-app) del proyecto customer-order. Use proactively cuando un CR requiera cambios en el frontend: interfaces/modelos TypeScript, servicios HTTP, componentes (lista, detalle, modal de creación/edición), filtros de UI, badges y sus tests. Consume la API de Laravel vía REST. NO contiene lógica de negocio (esa vive en Laravel) ni toca backend/BD.
+description: "Especialista en la capa Angular 21 (is-order-flow-app) del proyecto customer-order. Use proactively cuando un CR requiera cambios en el frontend: interfaces/modelos TypeScript, servicios HTTP, componentes (lista, detalle, modal de creación/edición), filtros de UI, badges y sus tests. Consume la API de Laravel vía REST. NO contiene lógica de negocio (esa vive en Laravel) ni toca backend/BD."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 color: green

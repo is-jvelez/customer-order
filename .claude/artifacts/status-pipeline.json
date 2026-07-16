@@ -1,0 +1,53 @@
+{
+  "cr_id": "CR-001-order-priority",
+  "cr_path": "change-requests/CR-001-order-priority.md",
+  "started_at": "2026-07-16T00:00:00-05:00",
+  "reconciliation_check": {
+    "run": true,
+    "found_drift": false,
+    "notes": "flyway info confirma V10 aplicado (coincide con repo); columna Priority no existe aun; imagenes de laravel/angular mas nuevas que el ultimo commit de esas carpetas. Sin hallazgos, se omite checkpoint de reconciliacion."
+  },
+  "stages": {
+    "sql": {
+      "status": "in_progress",
+      "applicable": true,
+      "started_at": "2026-07-16T00:00:00-05:00",
+      "completed_at": null,
+      "approved_by_human": false,
+      "metrics": {}
+    },
+    "laravel": {
+      "status": "pending",
+      "applicable": true,
+      "started_at": null,
+      "completed_at": null,
+      "approved_by_human": false,
+      "metrics": {}
+    },
+    "angular": {
+      "status": "pending",
+      "applicable": true,
+      "started_at": null,
+      "completed_at": null,
+      "approved_by_human": false,
+      "metrics": {}
+    },
+    "testing": {
+      "status": "pending",
+      "applicable": true,
+      "started_at": null,
+      "completed_at": null,
+      "approved_by_human": false,
+      "metrics": {}
+    },
+    "deploy": {
+      "status": "pending",
+      "applicable": true,
+      "started_at": null,
+      "completed_at": null,
+      "approved_by_human": false,
+      "metrics": {}
+    }
+  },
+  "closed": false
+}

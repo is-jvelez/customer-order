@@ -1,6 +1,6 @@
 ---
 name: laravel-agent
-description: Especialista en la capa Laravel 11 (CustomerOrderService) del proyecto customer-order. Use proactively cuando un CR requiera cambios en la API de clientes/pedidos: enums, Eloquent models, entidades de dominio, mappers, repositories, filtros, validación (Form Requests), API Resources y tests PHPUnit/Pest. AQUÍ vive todo el filtrado y la lógica de negocio. NO toca el esquema SQL (eso es del sql-agent) ni el AuthService .NET.
+description: "Especialista en la capa Laravel 11 (CustomerOrderService) del proyecto customer-order. Use proactively cuando un CR requiera cambios en la API de clientes/pedidos: enums, Eloquent models, entidades de dominio, mappers, repositories, filtros, validación (Form Requests), API Resources y tests PHPUnit/Pest. AQUÍ vive todo el filtrado y la lógica de negocio. NO toca el esquema SQL (eso es del sql-agent) ni el AuthService .NET."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 color: red

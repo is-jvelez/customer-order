@@ -1,6 +1,6 @@
 ---
 name: sql-agent
-description: Especialista en la capa SQL Server (esquema + migraciones Flyway) del proyecto customer-order. Use proactively cuando un CR requiera cambios de esquema en la base de datos (columnas, índices, tablas). NO gestiona lógica de negocio ni filtrado: eso vive en Laravel. NO crea stored procedures (este proyecto no los usa).
+description: "Especialista en la capa SQL Server (esquema + migraciones Flyway) del proyecto customer-order. Use proactively cuando un CR requiera cambios de esquema en la base de datos (columnas, índices, tablas). NO gestiona lógica de negocio ni filtrado: eso vive en Laravel. NO crea stored procedures (este proyecto no los usa)."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 color: blue

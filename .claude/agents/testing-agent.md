@@ -1,6 +1,6 @@
 ---
 name: testing-agent
-description: Especialista transversal de pruebas y verificación del proyecto customer-order. Use proactively como último paso del pipeline, después de que sql-agent, laravel-agent y angular-agent completaron sus etapas. Verifica los golden masters de las tres capas, corre las suites de pruebas de cada capa, y ejecuta la prueba de integración end-to-end. Es un GATE DE CALIDAD de solo lectura sobre el código: verifica y reporta, NO modifica código de las capas.
+description: "Especialista transversal de pruebas y verificación del proyecto customer-order. Use proactively como último paso del pipeline, después de que sql-agent, laravel-agent y angular-agent completaron sus etapas. Verifica los golden masters de las tres capas, corre las suites de pruebas de cada capa, y ejecuta la prueba de integración end-to-end. Es un GATE DE CALIDAD de solo lectura sobre el código: verifica y reporta, NO modifica código de las capas."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: purple
