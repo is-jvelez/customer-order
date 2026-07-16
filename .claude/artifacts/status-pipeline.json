@@ -1,0 +1,63 @@
+{
+  "cr_id": "CR-001-order-priority",
+  "cr_path": "change-requests/CR-001-order-priority.md",
+  "started_at": "2026-07-15T00:00:00-00:00",
+  "stages": {
+    "sql": {
+      "status": "completed",
+      "applicable": true,
+      "started_at": "2026-07-15T00:00:00-00:00",
+      "completed_at": "2026-07-15T00:00:00-00:00",
+      "approved_by_human": true
+    },
+    "laravel": {
+      "status": "completed",
+      "applicable": true,
+      "started_at": "2026-07-15T00:00:00-00:00",
+      "completed_at": "2026-07-16T00:00:00-00:00",
+      "approved_by_human": true
+    },
+    "angular": {
+      "status": "completed",
+      "applicable": true,
+      "started_at": "2026-07-16T00:00:00-00:00",
+      "completed_at": "2026-07-16T00:00:00-00:00",
+      "approved_by_human": true,
+      "note": "Suite corre limpia para CR-001 (6/7 archivos, 21/22 tests, 0 errores no manejados). Unica falla remanente: app.spec.ts > should render title, preexistente y no relacionada con CR-001 -- aceptada explicitamente por el humano como fuera de alcance."
+    },
+    "testing": {
+      "status": "completed",
+      "applicable": true,
+      "started_at": "2026-07-16T00:00:00-00:00",
+      "completed_at": "2026-07-16T00:00:00-00:00",
+      "approved_by_human": true,
+      "note": "Re-verificacion independiente OK: Laravel 113/113 (323 assertions), Angular 21/22 (6/7 specs, unica falla preexistente aceptada). Golden masters consistentes. 8/10 criterios de aceptacion con evidencia; 2 restantes dependen de deploy (migracion aplicada + e2e real). Sin scope creep."
+    },
+    "deploy": {
+      "status": "completed",
+      "applicable": true,
+      "started_at": "2026-07-16T00:00:00-00:00",
+      "completed_at": "2026-07-16T00:00:00-00:00",
+      "approved_by_human": true,
+      "note": "customer-order-api y order-flow-app reconstruidos y recreados, healthy. Verificacion programatica OK: GET /api/orders -> 5 pedidos, todos priority=2; filtro ?priority=2/3/1 correcto; POST con priority=3 y priority=0 (422) verificados y limpiados. Confirmacion visual humana OK tras hard-refresh."
+    }
+  },
+  "sql_migration_applied": true,
+  "pr_created": false,
+  "known_issues": [
+    {
+      "id": "env-drift-customer-order-api",
+      "description": "Explicado y resuelto: la BD real ya tenia Priority (migracion previa no rastreada, ver flyway-v11-checksum-mismatch) mas 2 filas de prueba (Id 6 y 9) creadas via POST real contra la API -- de ahi los 7 pedidos que veia el contenedor vivo. Filas de prueba borradas; checksum reparado. El contenedor customer-order-api en ejecucion sigue corriendo codigo VIEJO (sin priority en la imagen) -- eso se resuelve en la etapa deploy reconstruyendo la imagen, no es parte de este known_issue.",
+      "flagged_by": "laravel-agent",
+      "flagged_at": "2026-07-16T00:00:00-00:00",
+      "resolved": true
+    },
+    {
+      "id": "flyway-v11-checksum-mismatch",
+      "description": "Resuelto: se ejecuto 'docker compose run --rm flyway repair' (aprobado por el humano), que actualizo el checksum registrado de V11 al del archivo del repo. 'docker compose up -d --force-recreate flyway' confirmo despues: 'Successfully validated 11 migrations' / 'Schema up to date'. Las 2 filas de prueba (Id 6 y 9, con sus OrderItems) fueron borradas (aprobado por el humano); Orders vuelve a tener exactamente 5 filas (Id 1-5), coincidiendo con el baseline confirmado.",
+      "flagged_by": "orchestrator",
+      "flagged_at": "2026-07-16T00:00:00-00:00",
+      "resolved": true
+    }
+  ]
+}

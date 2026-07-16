@@ -29,14 +29,20 @@ class DtoConstructionTest extends TestCase
 
         $item = new OrderItemDTO(description: 'Mouse', quantity: 2, unitPrice: 10.0);
         $createOrder = new CreateOrderDTO(customerId: 5, items: [$item], notes: 'Handle with care');
+        $createOrderWithPriority = new CreateOrderDTO(customerId: 5, items: [$item], notes: null, priority: 3);
         $updateOrder = new UpdateOrderDTO(notes: 'Updated note');
+        $updateOrderWithPriority = new UpdateOrderDTO(notes: null, priority: 1);
 
         $this->assertSame('Bob', $createCustomer->name);
         $this->assertSame('bobby@example.com', $updateCustomer->email);
         $this->assertSame('Mouse', $item->description);
         $this->assertSame(5, $createOrder->customerId);
         $this->assertCount(1, $createOrder->items);
+        $this->assertNull($createOrder->priority);
+        $this->assertSame(3, $createOrderWithPriority->priority);
         $this->assertSame('Updated note', $updateOrder->notes);
+        $this->assertNull($updateOrder->priority);
+        $this->assertSame(1, $updateOrderWithPriority->priority);
     }
 }
 

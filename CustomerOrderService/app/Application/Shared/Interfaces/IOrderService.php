@@ -9,7 +9,7 @@ use App\Domain\Orders\Entities\Order;
 interface IOrderService
 {
     /**
-     * @param  array{status?:string, customer_id?:int, date_from?:string, date_to?:string, per_page?:int, page?:int} $filters
+     * @param  array{status?:string, customer_id?:int, date_from?:string, date_to?:string, priority?:int, per_page?:int, page?:int} $filters
      * @return array{items: Order[], pagination: array}
      */
     public function getAll(array $filters = []): array;

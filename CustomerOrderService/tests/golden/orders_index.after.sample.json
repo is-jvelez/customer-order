@@ -1,0 +1,179 @@
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": 9,
+        "customer_id": 4,
+        "status": "Pending",
+        "priority": 3,
+        "total": 364,
+        "notes": "Prueba de Prioridad",
+        "created_at": "2026-07-15 03:02:35.3566667",
+        "updated_at": "2026-07-15 03:02:35.3633333",
+        "items": [
+          {
+            "id": 15,
+            "description": "Mesa",
+            "quantity": 4,
+            "unit_price": 68.5
+          },
+          {
+            "id": 16,
+            "description": "Silla",
+            "quantity": 8,
+            "unit_price": 11.25
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "customer_id": 5,
+        "status": "Pending",
+        "priority": 2,
+        "total": 10.42,
+        "notes": "Prueba de funcionamiento - Lista de Utiles",
+        "created_at": "2026-07-14 14:17:02.2400000",
+        "updated_at": "2026-07-14 14:17:02.2666667",
+        "items": [
+          {
+            "id": 9,
+            "description": "Cuaderno Cuadro",
+            "quantity": 5,
+            "unit_price": 1.12
+          },
+          {
+            "id": 10,
+            "description": "Cuaderno Linea",
+            "quantity": 2,
+            "unit_price": 1.15
+          },
+          {
+            "id": 11,
+            "description": "Forros universitario",
+            "quantity": 12,
+            "unit_price": 0.21
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "customer_id": 2,
+        "status": "Pending",
+        "priority": 2,
+        "total": 124.99,
+        "notes": null,
+        "created_at": "2026-07-14 13:51:11.6900000",
+        "updated_at": "2026-07-14 13:51:11.7066667",
+        "items": [
+          {
+            "id": 7,
+            "description": "Webcam Logitech",
+            "quantity": 1,
+            "unit_price": 89.99
+          },
+          {
+            "id": 8,
+            "description": "Hub USB 7 puertos",
+            "quantity": 1,
+            "unit_price": 35
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "customer_id": 3,
+        "status": "Cancelled",
+        "priority": 2,
+        "total": 150,
+        "notes": "Cancelado por falta de stock",
+        "created_at": "2026-07-14 13:51:11.6900000",
+        "updated_at": "2026-07-14 13:51:11.7066667",
+        "items": [
+          {
+            "id": 6,
+            "description": "Audífonos Sony",
+            "quantity": 2,
+            "unit_price": 75
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "customer_id": 2,
+        "status": "InProgress",
+        "priority": 2,
+        "total": 120,
+        "notes": "Cliente solicitó embalaje especial",
+        "created_at": "2026-07-14 13:51:11.6900000",
+        "updated_at": "2026-07-14 13:51:11.7066667",
+        "items": [
+          {
+            "id": 5,
+            "description": "Teclado mecánico",
+            "quantity": 1,
+            "unit_price": 120
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "customer_id": 1,
+        "status": "Completed",
+        "priority": 2,
+        "total": 375.5,
+        "notes": "Entregado sin novedad",
+        "created_at": "2026-07-14 13:51:11.6900000",
+        "updated_at": "2026-07-14 13:51:11.7066667",
+        "items": [
+          {
+            "id": 3,
+            "description": "Monitor LG 24\"",
+            "quantity": 1,
+            "unit_price": 350
+          },
+          {
+            "id": 4,
+            "description": "Cable HDMI 2m",
+            "quantity": 3,
+            "unit_price": 8.5
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "customer_id": 1,
+        "status": "Pending",
+        "priority": 2,
+        "total": 949.99,
+        "notes": "Entregar en horario de oficina",
+        "created_at": "2026-07-14 13:51:11.6900000",
+        "updated_at": "2026-07-14 13:51:11.7066667",
+        "items": [
+          {
+            "id": 1,
+            "description": "Laptop HP 15\"",
+            "quantity": 1,
+            "unit_price": 899.99
+          },
+          {
+            "id": 2,
+            "description": "Mouse inalámbrico",
+            "quantity": 2,
+            "unit_price": 25
+          }
+        ]
+      }
+    ],
+    "pagination": {
+      "total": 7,
+      "per_page": 15,
+      "current_page": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 7
+    }
+  },
+  "message": "Pedidos obtenidos exitosamente",
+  "errors": []
+}

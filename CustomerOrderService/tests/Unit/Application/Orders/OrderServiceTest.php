@@ -16,6 +16,7 @@ use App\Domain\Orders\Exceptions\InvalidOrderStatusException;
 use App\Domain\Orders\Exceptions\OrderNotFoundException;
 use App\Domain\Orders\Interfaces\IOrderRepository;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use PHPUnit\Framework\TestCase;
 
 class OrderServiceTest extends TestCase
@@ -105,6 +106,47 @@ class OrderServiceTest extends TestCase
         $this->assertSame('Office', $created->notes);
     }
 
+    public function test_Create_ShouldDefaultPriorityToMedium_WhenDtoOmitsPriority(): void
+    {
+        $dto = new CreateOrderDTO(
+            customerId: 3,
+            items: [new OrderItemDTO('Mouse', 1, 10.0)],
+        );
+
+        $this->customerRepository->method('findById')->willReturn($this->makeCustomer(3));
+
+        $this->orderRepository->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->callback(fn(Order $order): bool => $order->priority === OrderPriority::Medium),
+                $this->anything(),
+            )
+            ->willReturn($this->makeOrder(id: 10, status: OrderStatus::Pending));
+
+        $this->service->create($dto);
+    }
+
+    public function test_Create_ShouldPersistExplicitPriority_WhenDtoProvidesIt(): void
+    {
+        $dto = new CreateOrderDTO(
+            customerId: 3,
+            items: [new OrderItemDTO('Mouse', 1, 10.0)],
+            priority: 3,
+        );
+
+        $this->customerRepository->method('findById')->willReturn($this->makeCustomer(3));
+
+        $this->orderRepository->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->callback(fn(Order $order): bool => $order->priority === OrderPriority::High),
+                $this->anything(),
+            )
+            ->willReturn($this->makeOrder(id: 11, status: OrderStatus::Pending));
+
+        $this->service->create($dto);
+    }
+
     public function test_Update_ShouldThrowException_WhenOrderDoesNotExist(): void
     {
         $this->orderRepository->expects($this->once())
@@ -138,6 +180,40 @@ class OrderServiceTest extends TestCase
         $this->assertSame('New Note', $result->notes);
     }
 
+    public function test_Update_ShouldPersistNewPriority_WhenDtoProvidesIt(): void
+    {
+        $existing = $this->makeOrder(id: 2, status: OrderStatus::Pending, notes: 'Old');
+
+        $this->orderRepository->expects($this->once())
+            ->method('findById')
+            ->with(2)
+            ->willReturn($existing);
+
+        $this->orderRepository->expects($this->once())
+            ->method('update')
+            ->with($this->callback(fn(Order $updated): bool => $updated->priority === OrderPriority::High))
+            ->willReturn($this->makeOrder(id: 2, status: OrderStatus::Pending, notes: 'Old'));
+
+        $this->service->update(2, new UpdateOrderDTO(priority: 3));
+    }
+
+    public function test_Update_ShouldKeepExistingPriority_WhenDtoOmitsIt(): void
+    {
+        $existing = $this->makeOrder(id: 2, status: OrderStatus::Pending, notes: 'Old');
+
+        $this->orderRepository->expects($this->once())
+            ->method('findById')
+            ->with(2)
+            ->willReturn($existing);
+
+        $this->orderRepository->expects($this->once())
+            ->method('update')
+            ->with($this->callback(fn(Order $updated): bool => $updated->priority === $existing->priority))
+            ->willReturn($existing);
+
+        $this->service->update(2, new UpdateOrderDTO(notes: 'New Note'));
+    }
+
     public function test_Complete_ShouldThrowException_WhenTransitionIsInvalid(): void
     {
         $this->orderRepository->expects($this->once())
@@ -165,6 +241,23 @@ class OrderServiceTest extends TestCase
         $result = $this->service->complete(6);
 
         $this->assertSame(OrderStatus::Completed, $result->status);
+    }
+
+    public function test_Complete_ShouldPreserveExistingPriority_WhenStatusChanges(): void
+    {
+        $existing = $this->makeOrder(id: 6, status: OrderStatus::InProgress, priority: OrderPriority::High);
+
+        $this->orderRepository->expects($this->once())
+            ->method('findById')
+            ->with(6)
+            ->willReturn($existing);
+
+        $this->orderRepository->expects($this->once())
+            ->method('update')
+            ->with($this->callback(fn(Order $o): bool => $o->priority === OrderPriority::High))
+            ->willReturn($existing);
+
+        $this->service->complete(6);
     }
 
     public function test_Cancel_ShouldThrowException_WhenTransitionIsInvalid(): void
@@ -254,7 +347,7 @@ class OrderServiceTest extends TestCase
         );
     }
 
-    private function makeOrder(int $id, OrderStatus $status, ?string $notes = null): Order
+    private function makeOrder(int $id, OrderStatus $status, ?string $notes = null, OrderPriority $priority = OrderPriority::Medium): Order
     {
         return new Order(
             id: $id,
@@ -265,6 +358,7 @@ class OrderServiceTest extends TestCase
             createdAt: '2026-01-01 00:00:00',
             updatedAt: '2026-01-01 01:00:00',
             items: [],
+            priority: $priority,
         );
     }
 }

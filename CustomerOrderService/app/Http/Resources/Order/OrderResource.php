@@ -18,6 +18,7 @@ class OrderResource extends JsonResource
             'id'          => $order->id,
             'customer_id' => $order->customerId,
             'status'      => $order->status->value,
+            'priority'    => $order->priority->value,
             'total'       => $order->total,
             'notes'       => $order->notes,
             'created_at'  => $order->createdAt,

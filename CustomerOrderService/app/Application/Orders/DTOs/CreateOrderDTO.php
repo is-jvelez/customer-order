@@ -9,5 +9,6 @@ class CreateOrderDTO
         public readonly int     $customerId,
         public readonly array   $items,
         public readonly ?string $notes = null,
+        public readonly ?int    $priority = null,
     ) {}
 }

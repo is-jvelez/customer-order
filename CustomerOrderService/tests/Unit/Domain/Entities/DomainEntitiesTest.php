@@ -7,6 +7,7 @@ use App\Domain\Customers\ValueObjects\CustomerEmail;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use PHPUnit\Framework\TestCase;
 
 class DomainEntitiesTest extends TestCase
@@ -60,6 +61,24 @@ class DomainEntitiesTest extends TestCase
         $this->assertSame('Urgent', $order->notes);
         $this->assertCount(1, $order->items);
         $this->assertSame('Keyboard', $order->items[0]->description);
+        $this->assertSame(OrderPriority::Medium, $order->priority);
+    }
+
+    public function test_Order_ShouldExposeExplicitPriority_WhenProvided(): void
+    {
+        $order = new Order(
+            id: 2,
+            customerId: 9,
+            status: OrderStatus::Pending,
+            total: 10.0,
+            notes: null,
+            createdAt: '2026-01-02 11:00:00',
+            updatedAt: '2026-01-02 11:30:00',
+            items: [],
+            priority: OrderPriority::High,
+        );
+
+        $this->assertSame(OrderPriority::High, $order->priority);
     }
 }
 

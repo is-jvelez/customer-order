@@ -32,6 +32,9 @@ class EloquentOrderRepository implements IOrderRepository
         if (!empty($filters['date_to'])) {
             $query->where('CreatedAt', '<=', $filters['date_to'] . ' 23:59:59');
         }
+        if (!empty($filters['priority'])) {
+            $query->where('Priority', (int) $filters['priority']);
+        }
 
         $perPage = min((int) ($filters['per_page'] ?? 15), 100);
         $page    = max((int) ($filters['page'] ?? 1), 1);
@@ -67,6 +70,7 @@ class EloquentOrderRepository implements IOrderRepository
                 'CustomerId' => $order->customerId,
                 'Status'     => $order->status->value,
                 'Notes'      => $order->notes,
+                'Priority'   => $order->priority->value,
             ]);
 
             foreach ($items as $item) {
@@ -91,8 +95,9 @@ class EloquentOrderRepository implements IOrderRepository
         $model = OrderModel::findOrFail($order->id);
 
         $model->update([
-            'Status' => $order->status->value,
-            'Notes'  => $order->notes,
+            'Status'   => $order->status->value,
+            'Notes'    => $order->notes,
+            'Priority' => $order->priority->value,
         ]);
 
         $model->refresh();

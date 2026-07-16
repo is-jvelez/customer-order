@@ -29,6 +29,7 @@ class OrderController extends Controller
             'customer_id' => $request->query('customer_id'),
             'date_from'   => $request->query('date_from'),
             'date_to'     => $request->query('date_to'),
+            'priority'    => $request->query('priority'),
             'per_page'    => $request->query('per_page', 15),
             'page'        => $request->query('page', 1),
         ];
@@ -62,6 +63,9 @@ class OrderController extends Controller
                 customerId: (int) $request->input('customer_id'),
                 items:      $items,
                 notes:      $request->input('notes'),
+                priority:   $request->has('priority') && $request->input('priority') !== null
+                    ? (int) $request->input('priority')
+                    : null,
             );
 
             $order = $this->orderService->create($dto);
@@ -83,7 +87,12 @@ class OrderController extends Controller
 
     public function update(UpdateOrderRequest $request, int $id): JsonResponse
     {
-        $dto   = new UpdateOrderDTO(notes: $request->input('notes'));
+        $dto   = new UpdateOrderDTO(
+            notes:    $request->input('notes'),
+            priority: $request->has('priority') && $request->input('priority') !== null
+                ? (int) $request->input('priority')
+                : null,
+        );
         $order = $this->orderService->update($id, $dto);
         $data  = (new OrderResource($order))->toArray($request);
 

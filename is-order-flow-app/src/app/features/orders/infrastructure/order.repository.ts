@@ -22,6 +22,7 @@ interface RawOrder {
   id: number;
   customer_id: number;
   status: string;
+  priority: number;
   total: number;
   notes: string | null;
   created_at: string;
@@ -58,6 +59,7 @@ function mapOrder(raw: RawOrder): Order {
     customerId: raw.customer_id,
     customerName: null,
     status: raw.status as Order['status'],
+    priority: raw.priority as Order['priority'],
     total: raw.total,
     notes: raw.notes,
     createdAt: raw.created_at,
@@ -90,6 +92,7 @@ export class OrderRepository implements IOrderRepository {
     if (params.customer_id) httpParams = httpParams.set('customer_id', params.customer_id);
     if (params.date_from) httpParams = httpParams.set('date_from', params.date_from);
     if (params.date_to) httpParams = httpParams.set('date_to', params.date_to);
+    if (params.priority) httpParams = httpParams.set('priority', params.priority);
     return this.http
       .get<ApiResponse<RawOrdersResponse>>(ORDER_ROUTES.BASE, { params: httpParams })
       .pipe(map((res) => ({ ...res, data: res.data ? mapOrdersPage(res.data) : null })));
@@ -105,6 +108,7 @@ export class OrderRepository implements IOrderRepository {
     const body = {
       customer_id: data.customerId,
       notes: data.notes ?? null,
+      priority: data.priority,
       items: data.items.map((i) => ({
         description: i.description,
         quantity: i.quantity,

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Infrastructure\Persistence;
 
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Infrastructure\Persistence\Mappers\OrderMapper;
 use App\Infrastructure\Persistence\Models\OrderItemModel;
 use App\Infrastructure\Persistence\Models\OrderModel;
@@ -17,6 +18,7 @@ class OrderMapperTest extends TestCase
             'CustomerId' => 9,
             'Status' => 'Pending',
             'Notes' => 'No relation',
+            'Priority' => 1,
         ]);
         $model->Id = 100;
         $model->Total = 55.5;
@@ -31,6 +33,35 @@ class OrderMapperTest extends TestCase
         $this->assertSame(OrderStatus::Pending, $order->status);
         $this->assertSame(55.5, $order->total);
         $this->assertCount(0, $order->items);
+        $this->assertSame(OrderPriority::Low, $order->priority);
+    }
+
+    /** @dataProvider priorityValuesProvider */
+    public function test_ToDomain_ShouldMapPriorityForEveryValue_WhenModelHasPriority(int $rawValue, OrderPriority $expected): void
+    {
+        $model = new OrderModel([
+            'CustomerId' => 1,
+            'Status' => 'Pending',
+            'Notes' => null,
+            'Priority' => $rawValue,
+        ]);
+        $model->Id = 1;
+        $model->Total = 0;
+        $model->CreatedAt = '2026-01-01 00:00:00';
+        $model->UpdatedAt = '2026-01-01 00:00:00';
+
+        $order = (new OrderMapper())->toDomain($model);
+
+        $this->assertSame($expected, $order->priority);
+    }
+
+    public static function priorityValuesProvider(): array
+    {
+        return [
+            'Low'    => [1, OrderPriority::Low],
+            'Medium' => [2, OrderPriority::Medium],
+            'High'   => [3, OrderPriority::High],
+        ];
     }
 
     public function test_ToDomain_ShouldMapOrderAndItems_WhenRelationIsLoaded(): void
@@ -55,6 +86,7 @@ class OrderMapperTest extends TestCase
             'CustomerId' => 4,
             'Status' => 'Completed',
             'Notes' => 'Done',
+            'Priority' => 3,
         ]);
         $model->Id = 3;
         $model->Total = 40.0;
@@ -70,6 +102,7 @@ class OrderMapperTest extends TestCase
         $this->assertSame('Item A', $order->items[0]->description);
         $this->assertSame(2, $order->items[0]->quantity);
         $this->assertSame(20.0, $order->items[1]->unitPrice);
+        $this->assertSame(OrderPriority::High, $order->priority);
     }
 }
 

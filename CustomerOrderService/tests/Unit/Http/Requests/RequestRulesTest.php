@@ -42,16 +42,20 @@ class RequestRulesTest extends TestCase
         $this->assertArrayHasKey('items.*.quantity', $rules);
         $this->assertArrayHasKey('items.*.unit_price', $rules);
         $this->assertArrayHasKey('items.required', $messages);
+        $this->assertArrayHasKey('priority', $rules);
+        $this->assertContains('in:1,2,3', $rules['priority']);
     }
 
-    public function test_UpdateOrderRequest_ShouldAllowOnlyNotes_WhenCalled(): void
+    public function test_UpdateOrderRequest_ShouldAllowNotesAndPriority_WhenCalled(): void
     {
         $request = new UpdateOrderRequest();
         $rules = $request->rules();
 
         $this->assertTrue($request->authorize());
-        $this->assertCount(1, $rules);
+        $this->assertCount(2, $rules);
         $this->assertArrayHasKey('notes', $rules);
+        $this->assertArrayHasKey('priority', $rules);
+        $this->assertContains('in:1,2,3', $rules['priority']);
     }
 }
 

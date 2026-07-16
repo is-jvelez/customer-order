@@ -9,6 +9,7 @@ use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\Exceptions\InvalidOrderStatusException;
 use App\Domain\Orders\Exceptions\OrderNotFoundException;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use Mockery\MockInterface;
 use Tests\Support\AuthenticatesWithJwt;
 use Tests\TestCase;
@@ -41,7 +42,35 @@ class OrderControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.pagination.total', 1)
-            ->assertJsonPath('data.items.0.status', 'Pending');
+            ->assertJsonPath('data.items.0.status', 'Pending')
+            ->assertJsonPath('data.items.0.priority', 2);
+    }
+
+    public function test_Index_ShouldForwardPriorityFilter_WhenQueryParamIsProvided(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getAll')
+                ->once()
+                ->with($this->callback(fn(array $filters): bool => ($filters['priority'] ?? null) === '3'))
+                ->andReturn([
+                    'items' => [$this->makeOrder(1, OrderStatus::Pending, OrderPriority::High)],
+                    'pagination' => [
+                        'total' => 1,
+                        'per_page' => 15,
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'from' => 1,
+                        'to' => 1,
+                    ],
+                ]);
+        });
+
+        $response = $this->getJson('/api/orders?priority=3', $this->apiHeaders());
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.items.0.priority', 3);
     }
 
     public function test_Store_ShouldReturn201_WhenPayloadIsValid(): void
@@ -66,6 +95,49 @@ class OrderControllerTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.id', 9);
+    }
+
+    public function test_Store_ShouldPersistExplicitPriority_WhenPayloadIncludesIt(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('create')
+                ->once()
+                ->with($this->callback(fn($dto): bool => $dto->priority === 3))
+                ->andReturn($this->makeOrder(9, OrderStatus::Pending, OrderPriority::High));
+        });
+
+        $payload = [
+            'customer_id' => 1,
+            'priority' => 3,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ];
+
+        $response = $this->postJson('/api/orders', $payload, $this->apiHeaders());
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.priority', 3);
+    }
+
+    public function test_Store_ShouldReturn422_WhenPriorityIsOutOfRange(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('create');
+        });
+
+        $response = $this->postJson('/api/orders', [
+            'customer_id' => 1,
+            'priority' => 4,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ], $this->apiHeaders());
+
+        $response->assertStatus(422)
+            ->assertJsonPath('success', false);
     }
 
     public function test_Store_ShouldReturn422_WhenCustomerDoesNotExist(): void
@@ -99,6 +171,35 @@ class OrderControllerTest extends TestCase
             'customer_id' => 0,
             'items' => [],
         ], $this->apiHeaders());
+
+        $response->assertStatus(422)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_Update_ShouldForwardPriority_WhenPayloadIncludesIt(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('update')
+                ->once()
+                ->with(2, $this->callback(fn($dto): bool => $dto->priority === 1))
+                ->andReturn($this->makeOrder(2, OrderStatus::Pending, OrderPriority::Low));
+        });
+
+        $response = $this->putJson('/api/orders/2', ['priority' => 1], $this->apiHeaders());
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.priority', 1);
+    }
+
+    public function test_Update_ShouldReturn422_WhenPriorityIsNotNumeric(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('update');
+        });
+
+        $response = $this->putJson('/api/orders/2', ['priority' => 'x'], $this->apiHeaders());
 
         $response->assertStatus(422)
             ->assertJsonPath('success', false);
@@ -151,7 +252,7 @@ class OrderControllerTest extends TestCase
             ->assertJsonPath('success', true);
     }
 
-    private function makeOrder(int $id, OrderStatus $status): Order
+    private function makeOrder(int $id, OrderStatus $status, OrderPriority $priority = OrderPriority::Medium): Order
     {
         return new Order(
             id: $id,
@@ -170,6 +271,7 @@ class OrderControllerTest extends TestCase
                     unitPrice: 45.5,
                 ),
             ],
+            priority: $priority,
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence\Models;
 
+use App\Enums\OrderPriority;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -16,6 +17,11 @@ class OrderModel extends Model
         'CustomerId',
         'Status',
         'Notes',
+        'Priority',
+    ];
+
+    protected $casts = [
+        'Priority' => OrderPriority::class,
     ];
 
     public function items(): HasMany

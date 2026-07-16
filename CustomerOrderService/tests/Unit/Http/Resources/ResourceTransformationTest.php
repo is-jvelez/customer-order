@@ -73,6 +73,7 @@ class ResourceTransformationTest extends TestCase
         ])))->toArray(Request::create('/'));
 
         $this->assertSame('Completed', $resourceArray['status']);
+        $this->assertSame(2, $resourceArray['priority']);
         $this->assertCount(2, $resourceArray['items']);
         $this->assertSame('USB Cable', $resourceArray['items'][0]['description']);
         $this->assertCount(1, $collectionArray);

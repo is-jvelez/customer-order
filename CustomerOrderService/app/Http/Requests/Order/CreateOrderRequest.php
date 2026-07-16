@@ -16,6 +16,7 @@ class CreateOrderRequest extends FormRequest
         return [
             'customer_id'             => ['required', 'integer', 'min:1'],
             'notes'                   => ['sometimes', 'nullable', 'string', 'max:500'],
+            'priority'                => ['sometimes', 'nullable', 'integer', 'in:1,2,3'],
             'items'                   => ['required', 'array', 'min:1'],
             'items.*.description'     => ['required', 'string', 'max:300'],
             'items.*.quantity'        => ['required', 'integer', 'min:1'],
@@ -27,6 +28,8 @@ class CreateOrderRequest extends FormRequest
     {
         return [
             'customer_id.required'        => 'El ID del cliente es obligatorio.',
+            'priority.integer'            => 'La prioridad debe ser un número entero.',
+            'priority.in'                 => 'La prioridad debe ser 1 (Baja), 2 (Media) o 3 (Alta).',
             'items.required'              => 'Debe incluir al menos un ítem.',
             'items.min'                   => 'Debe incluir al menos un ítem.',
             'items.*.description.required'=> 'Cada ítem debe tener descripción.',

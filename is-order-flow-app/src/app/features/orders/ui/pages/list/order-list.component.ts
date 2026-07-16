@@ -18,6 +18,7 @@ import { OrderFiltersComponent } from '../../components/order-filters/order-filt
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../../shared/components/ui/confirm-dialog/confirm-dialog.component';
 import { LoadingSpinnerComponent } from '../../../../../shared/components/ui/loading-spinner/loading-spinner.component';
 import { StatusLabelPipe } from '../../../../../shared/pipes/status-label.pipe';
+import { PriorityLabelPipe } from '../../../../../shared/pipes/priority-label.pipe';
 import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
 import { DEFAULT_PAGE_SIZE } from '../../../../../shared/constants/app.constants';
 
@@ -34,6 +35,7 @@ import { DEFAULT_PAGE_SIZE } from '../../../../../shared/constants/app.constants
     DecimalPipe,
     LoadingSpinnerComponent,
     StatusLabelPipe,
+    PriorityLabelPipe,
     DateFormatPipe,
     OrderFiltersComponent,
   ],
@@ -66,6 +68,14 @@ import { DEFAULT_PAGE_SIZE } from '../../../../../shared/constants/app.constants
             <td mat-cell *matCellDef="let o">
               <mat-chip [class]="'chip-' + o.status.toLowerCase()">
                 {{ o.status | statusLabel }}
+              </mat-chip>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+            <td mat-cell *matCellDef="let o">
+              <mat-chip [class]="'chip-priority-' + o.priority">
+                {{ o.priority | priorityLabel }}
               </mat-chip>
             </td>
           </ng-container>
@@ -127,6 +137,9 @@ import { DEFAULT_PAGE_SIZE } from '../../../../../shared/constants/app.constants
     :host ::ng-deep .chip-inprogress { background-color: #E3F2FD !important; color: #1565C0 !important; }
     :host ::ng-deep .chip-completed { background-color: #E8F5E9 !important; color: #2E7D32 !important; }
     :host ::ng-deep .chip-cancelled { background-color: #FFEBEE !important; color: #C62828 !important; }
+    :host ::ng-deep .chip-priority-1 { background-color: #F5F5F5 !important; color: #616161 !important; }
+    :host ::ng-deep .chip-priority-2 { background-color: #FFF8E1 !important; color: #F57F17 !important; }
+    :host ::ng-deep .chip-priority-3 { background-color: #FFEBEE !important; color: #C62828 !important; }
   `],
 })
 export class OrderListComponent implements OnInit {
@@ -135,7 +148,7 @@ export class OrderListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly customerRepo = inject(CustomerRepository);
 
-  protected readonly columns = ['id', 'customer', 'status', 'total', 'createdAt', 'actions'];
+  protected readonly columns = ['id', 'customer', 'status', 'priority', 'total', 'createdAt', 'actions'];
   protected readonly DEFAULT_PAGE_SIZE = DEFAULT_PAGE_SIZE;
   private currentFilters: OrderFilterParams = {};
 

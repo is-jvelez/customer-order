@@ -13,6 +13,7 @@ import { CustomerRepository } from '../../../../customers/infrastructure/custome
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../../shared/components/ui/confirm-dialog/confirm-dialog.component';
 import { LoadingSpinnerComponent } from '../../../../../shared/components/ui/loading-spinner/loading-spinner.component';
 import { StatusLabelPipe } from '../../../../../shared/pipes/status-label.pipe';
+import { PriorityLabelPipe } from '../../../../../shared/pipes/priority-label.pipe';
 import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
 
 @Component({
@@ -27,6 +28,7 @@ import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
     DecimalPipe,
     LoadingSpinnerComponent,
     StatusLabelPipe,
+    PriorityLabelPipe,
     DateFormatPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +48,9 @@ import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
           <mat-card-subtitle>
             <mat-chip [class]="'chip-' + order.status.toLowerCase()">
               {{ order.status | statusLabel }}
+            </mat-chip>
+            <mat-chip [class]="'chip-priority-' + order.priority">
+              {{ order.priority | priorityLabel }}
             </mat-chip>
           </mat-card-subtitle>
         </mat-card-header>
@@ -110,6 +115,7 @@ import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
   styles: [`
     .page-header { margin-bottom: 24px; }
     .detail-card { max-width: 800px; }
+    mat-card-subtitle mat-chip { margin-right: 8px; }
     .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 16px; }
     .detail-item { display: flex; flex-direction: column; gap: 4px; }
     .label { font-size: 12px; color: #666; text-transform: uppercase; font-weight: 500; }
@@ -119,6 +125,9 @@ import { DateFormatPipe } from '../../../../../shared/pipes/date-format.pipe';
     :host ::ng-deep .chip-inprogress { background-color: #E3F2FD !important; color: #1565C0 !important; }
     :host ::ng-deep .chip-completed { background-color: #E8F5E9 !important; color: #2E7D32 !important; }
     :host ::ng-deep .chip-cancelled { background-color: #FFEBEE !important; color: #C62828 !important; }
+    :host ::ng-deep .chip-priority-1 { background-color: #F5F5F5 !important; color: #616161 !important; }
+    :host ::ng-deep .chip-priority-2 { background-color: #FFF8E1 !important; color: #F57F17 !important; }
+    :host ::ng-deep .chip-priority-3 { background-color: #FFEBEE !important; color: #C62828 !important; }
   `],
 })
 export class OrderDetailComponent implements OnInit {

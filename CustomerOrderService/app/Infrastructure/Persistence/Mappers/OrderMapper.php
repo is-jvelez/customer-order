@@ -25,6 +25,7 @@ class OrderMapper
             createdAt:  $model->CreatedAt,
             updatedAt:  $model->UpdatedAt,
             items:      $items,
+            priority:   $model->Priority,
         );
     }
 

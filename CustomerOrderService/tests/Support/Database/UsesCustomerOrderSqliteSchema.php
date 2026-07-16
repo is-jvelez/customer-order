@@ -48,6 +48,7 @@ trait UsesCustomerOrderSqliteSchema
             $table->increments('Id');
             $table->unsignedInteger('CustomerId');
             $table->string('Status', 30);
+            $table->unsignedTinyInteger('Priority')->default(2);
             $table->decimal('Total', 12, 2)->default(0);
             $table->string('Notes', 500)->nullable();
             $table->dateTime('CreatedAt')->nullable();

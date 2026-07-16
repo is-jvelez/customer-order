@@ -5,6 +5,7 @@ namespace Tests\Feature\Integration;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Infrastructure\Persistence\Repositories\EloquentOrderRepository;
 use Illuminate\Support\Facades\DB;
 use Tests\Support\Database\UsesCustomerOrderSqliteSchema;
@@ -49,6 +50,31 @@ class EloquentOrderRepositoryIntegrationTest extends TestCase
         $this->assertSame($customerId, $found->customerId);
         $this->assertSame(OrderStatus::Pending, $found->status);
         $this->assertCount(2, $found->items);
+        $this->assertSame(OrderPriority::Medium, $found->priority);
+    }
+
+    public function test_Create_ShouldPersistExplicitPriority_WhenOrderProvidesHighPriority(): void
+    {
+        $customerId = $this->seedCustomer('customer-priority@example.com');
+        $order = new Order(
+            id: null,
+            customerId: $customerId,
+            status: OrderStatus::Pending,
+            total: 0,
+            notes: null,
+            createdAt: null,
+            updatedAt: null,
+            items: [],
+            priority: OrderPriority::High,
+        );
+
+        $created = $this->repository->create($order, [
+            new OrderItem(null, null, 'Item A', 1, 5.0),
+        ]);
+        $found = $this->repository->findById((int) $created->id);
+
+        $this->assertSame(OrderPriority::High, $created->priority);
+        $this->assertSame(OrderPriority::High, $found->priority);
     }
 
     public function test_FindAll_ShouldApplyFiltersAndPagination_WhenFiltersAreProvided(): void
@@ -87,6 +113,48 @@ class EloquentOrderRepositoryIntegrationTest extends TestCase
         $this->assertSame('Completed', $result['items'][0]->status->value);
     }
 
+    public function test_FindAll_ShouldReturnOnlyMatchingPriority_WhenPriorityFilterIsProvided(): void
+    {
+        $customer = $this->seedCustomer('priority-filter@example.com');
+
+        DB::table('Orders')->insert([
+            [
+                'CustomerId' => $customer,
+                'Status' => 'Pending',
+                'Priority' => OrderPriority::High->value,
+                'Total' => 100,
+                'Notes' => 'Urgent',
+                'CreatedAt' => now()->toDateTimeString(),
+                'UpdatedAt' => now()->toDateTimeString(),
+            ],
+            [
+                'CustomerId' => $customer,
+                'Status' => 'Pending',
+                'Priority' => OrderPriority::Medium->value,
+                'Total' => 50,
+                'Notes' => 'Normal',
+                'CreatedAt' => now()->toDateTimeString(),
+                'UpdatedAt' => now()->toDateTimeString(),
+            ],
+            [
+                'CustomerId' => $customer,
+                'Status' => 'Pending',
+                'Priority' => OrderPriority::Low->value,
+                'Total' => 20,
+                'Notes' => 'Whenever',
+                'CreatedAt' => now()->toDateTimeString(),
+                'UpdatedAt' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        $filtered = $this->repository->findAll(['priority' => 3]);
+        $unfiltered = $this->repository->findAll([]);
+
+        $this->assertCount(1, $filtered['items']);
+        $this->assertSame(OrderPriority::High, $filtered['items'][0]->priority);
+        $this->assertCount(3, $unfiltered['items']);
+    }
+
     public function test_UpdateAndDelete_ShouldModifyAndRemoveOrder_WhenOrderExists(): void
     {
         $customerId = $this->seedCustomer('update@example.com');
@@ -110,10 +178,12 @@ class EloquentOrderRepositoryIntegrationTest extends TestCase
             createdAt: null,
             updatedAt: null,
             items: [],
+            priority: OrderPriority::High,
         ));
 
         $this->assertSame('Completed', $updated->status->value);
         $this->assertSame('updated notes', $updated->notes);
+        $this->assertSame(OrderPriority::High, $updated->priority);
 
         $this->repository->delete($orderId);
         $this->assertNull($this->repository->findById($orderId));
