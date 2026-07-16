@@ -50,7 +50,7 @@ Este bloque existe para que ninguna capa invente nombres. Cada agente consume el
 
 - Migración (vía Flyway) que añade la columna `Priority TINYINT NOT NULL DEFAULT 2` a la tabla `Orders`.
 - Índice `IX_Orders_Priority` sobre `(Priority)` (el filtro real corre en Laravel, pero el índice ayuda al plan de ejecución de esa query).
-- La migración **no debe** alterar ni recalcular datos existentes, ni tocar los triggers de `Total`/`UpdatedAt`. Los 6 pedidos actuales reciben `Priority = 2` automáticamente por el default.
+- La migración **no debe** alterar ni recalcular datos existentes, ni tocar los triggers de `Total`/`UpdatedAt`. Los 5 pedidos actuales reciben `Priority = 2` automáticamente por el default.
 - **No** se crea ni modifica ningún stored procedure (no existen).
 
 ### 4.2 Laravel 11 (CustomerOrderService)
@@ -84,7 +84,7 @@ Este bloque existe para que ninguna capa invente nombres. Cada agente consume el
 
 ## 5. Criterios de aceptación (verificables → convertibles en tests)
 
-- [ ] La migración aplica sobre la BD actual sin pérdida de datos; los 6 pedidos existentes quedan en `Priority = 2`.
+- [ ] La migración aplica sobre la BD actual sin pérdida de datos; los 5 pedidos existentes quedan en `Priority = 2`.
 - [ ] `GET /orders` devuelve cada pedido con el campo `priority` (entero 1–3).
 - [ ] `GET /orders?priority=3` devuelve **solo** pedidos con prioridad Alta.
 - [ ] `GET /orders` sin el param devuelve todos (comportamiento previo intacto).
@@ -111,7 +111,7 @@ Antes de aplicar cualquier cambio, cada agente graba el comportamiento actual co
 
 - **SQL (test de migración/esquema):**
   - Tras aplicar la migración, la columna `Priority` existe con tipo `TINYINT`, `NOT NULL` y default `2`.
-  - Los 6 registros preexistentes quedaron en `Priority = 2`.
+  - Los 5 registros preexistentes quedaron en `Priority = 2`.
   - Insertar un pedido nuevo con items y confirmar que los triggers de `Total`/`UpdatedAt` calculan igual que en la línea base (golden master de 6.1).
 - **Laravel (PHPUnit/Pest) — aquí vive la prueba del filtro:**
   - Cast del enum en `OrderModel`; `create()` sin `priority` → persiste `2`; con `3` → persiste `3`.

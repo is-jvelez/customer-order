@@ -5,7 +5,31 @@
       "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 1433)",
       "Bash(curl -s http://localhost:4200/orders)",
       "Bash(MSYS_NO_PATHCONV=1 docker exec sqlserver *)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(php -v)",
+      "Bash(composer -V)",
+      "Bash(docker -v)",
+      "Bash(curl -s -X POST http://localhost:5000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@example.com\",\"password\":\"Admin123!\"}')",
+      "Bash(curl -s http://localhost:5000/health)",
+      "Bash(cp \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\.claude\\\\artifacts\\\\evidence\\\\CR-001-order-priority\\\\laravel\\\\golden-orders-index.json\" \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\CustomerOrderService\\\\tests\\\\golden\\\\orders-index.json\")",
+      "Bash(cp \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\.claude\\\\artifacts\\\\evidence\\\\CR-001-order-priority\\\\laravel\\\\golden-orders-show-1.json\" \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\CustomerOrderService\\\\tests\\\\golden\\\\orders-show-1.json\")",
+      "Bash(cp \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\.claude\\\\artifacts\\\\evidence\\\\CR-001-order-priority\\\\laravel\\\\golden-dashboard-stats.json\" \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\CustomerOrderService\\\\tests\\\\golden\\\\dashboard-stats.json\")",
+      "Bash(docker volume *)",
+      "Bash(docker run *)",
+      "Bash(MSYS_NO_PATHCONV=1 docker run --rm -v __CMDSUB_OUTPUT__/CustomerOrderService:/var/www/html -v customer-order-vendor-cache:/var/www/html/vendor -w //var/www/html -e APP_KEY=base64:qLZjw1nl+2ny5g9d5g8Q6z8t5b2xJ9ZgY0m9r2Xw2QY= customer-order-customer-order-api vendor/bin/phpunit)",
+      "Bash(MSYS_NO_PATHCONV=1 docker run --rm -v __CMDSUB_OUTPUT__/CustomerOrderService:/var/www/html -v customer-order-vendor-cache:/var/www/html/vendor -w //var/www/html -e APP_KEY=base64:qLZjw1nl+2ny5g9d5g8Q6z8t5b2xJ9ZgY0m9r2Xw2QY= -e JWT_SECRET=MySuperSecretKeyForDevelopmentOnly2025!AuthService -e JWT_ISSUER=AuthService -e JWT_AUDIENCE=OrderFlowApp customer-order-customer-order-api vendor/bin/phpunit)",
+      "Bash(tee /c/Users/desarrollo.28/AppData/Local/Temp/claude/laravel-test-output.txt)",
+      "Bash(docker network *)",
+      "Bash(npm ci *)",
+      "Bash(npm test *)",
+      "Bash(tee \"C:\\\\Users\\\\desarrollo.28\\\\OneDrive - Grupo Torres & Torres\\\\Desktop\\\\IS\\\\IA\\\\Pruebas\\\\customer-order\\\\.claude\\\\artifacts\\\\evidence\\\\CR-001-order-priority\\\\angular\\\\golden-master-test-run-before.txt\")",
+      "Bash(node ./node_modules/@angular/cli/bin/ng.js test --watch=false)",
+      "Bash(curl *)",
+      "Read(//tmp/**)",
+      "Bash(docker stop *)",
+      "Bash(node *)",
+      "Bash(npx playwright *)",
+      "Bash(echo \"exit code: $?\")"
     ]
   }
 }

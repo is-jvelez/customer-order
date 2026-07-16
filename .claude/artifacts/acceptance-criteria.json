@@ -1,0 +1,65 @@
+{
+  "cr_id": "CR-001-order-priority",
+  "criteria": [
+    {
+      "id": 1,
+      "text": "La migración aplica sobre la BD actual sin pérdida de datos; los 5 pedidos existentes quedan en Priority = 2.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/sql-independent-verification.txt"
+    },
+    {
+      "id": 2,
+      "text": "GET /orders devuelve cada pedido con el campo priority (entero 1-3).",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/e2e-integration-test.txt"
+    },
+    {
+      "id": 3,
+      "text": "GET /orders?priority=3 devuelve solo pedidos con prioridad Alta.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/e2e-integration-test.txt"
+    },
+    {
+      "id": 4,
+      "text": "GET /orders sin el param devuelve todos (comportamiento previo intacto).",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/e2e-integration-test.txt"
+    },
+    {
+      "id": 5,
+      "text": "POST /orders sin priority crea el pedido con priority = 2.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/e2e-integration-test.txt"
+    },
+    {
+      "id": 6,
+      "text": "POST /orders con priority = 3 persiste 3; con un valor inválido (0, 4, \"x\") responde error de validación.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/e2e-integration-test.txt"
+    },
+    {
+      "id": 7,
+      "text": "En la lista, cada fila muestra el badge de prioridad con el color correcto.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/angular-rerun-output.txt (order-list.component.spec.ts) — verificación de render en navegador real pendiente de la etapa Deploy (rebuild de imagen order-flow-app)"
+    },
+    {
+      "id": 8,
+      "text": "El filtro de prioridad en la barra superior filtra la tabla correctamente.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/angular-rerun-output.txt (order.repository.spec.ts, envío del query param priority) + evidence/CR-001-order-priority/testing/e2e-integration-test.txt (filtro real en backend) — verificación visual en navegador real pendiente de Deploy"
+    },
+    {
+      "id": 9,
+      "text": "El modal de creación muestra \"Media\" preseleccionada y permite cambiarla.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/angular-rerun-output.txt (order-form.component.spec.ts) — verificación visual en navegador real pendiente de Deploy"
+    },
+    {
+      "id": 10,
+      "text": "El detalle muestra el badge de prioridad.",
+      "status": "pass",
+      "evidence": "evidence/CR-001-order-priority/testing/angular-rerun-output.txt (order-detail.component.spec.ts) — verificación visual en navegador real pendiente de Deploy"
+    }
+  ]
+}

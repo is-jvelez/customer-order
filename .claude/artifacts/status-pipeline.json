@@ -9,44 +9,64 @@
   },
   "stages": {
     "sql": {
-      "status": "in_progress",
+      "status": "completed",
       "applicable": true,
       "started_at": "2026-07-16T00:00:00-05:00",
-      "completed_at": null,
-      "approved_by_human": false,
-      "metrics": {}
+      "completed_at": "2026-07-16T00:00:00-05:00",
+      "approved_by_human": true,
+      "metrics": {
+        "duration_ms": 286874,
+        "tool_uses": 28,
+        "subagent_tokens": 52299
+      }
     },
     "laravel": {
-      "status": "pending",
+      "status": "completed",
       "applicable": true,
-      "started_at": null,
-      "completed_at": null,
-      "approved_by_human": false,
-      "metrics": {}
+      "started_at": "2026-07-16T00:00:00-05:00",
+      "completed_at": "2026-07-16T00:00:00-05:00",
+      "approved_by_human": true,
+      "metrics": {
+        "duration_ms": 902821,
+        "tool_uses": 68,
+        "subagent_tokens": 99509
+      }
     },
     "angular": {
-      "status": "pending",
+      "status": "completed",
       "applicable": true,
-      "started_at": null,
-      "completed_at": null,
-      "approved_by_human": false,
-      "metrics": {}
+      "started_at": "2026-07-16T00:00:00-05:00",
+      "completed_at": "2026-07-16T00:00:00-05:00",
+      "approved_by_human": true,
+      "metrics": {
+        "duration_ms": 3437016,
+        "tool_uses": 84,
+        "subagent_tokens": 124896
+      }
     },
     "testing": {
-      "status": "pending",
+      "status": "completed",
       "applicable": true,
-      "started_at": null,
-      "completed_at": null,
-      "approved_by_human": false,
-      "metrics": {}
+      "started_at": "2026-07-16T00:00:00-05:00",
+      "completed_at": "2026-07-16T00:00:00-05:00",
+      "approved_by_human": true,
+      "metrics": {
+        "duration_ms": 3996173,
+        "tool_uses": 89,
+        "subagent_tokens": 141329
+      }
     },
     "deploy": {
-      "status": "pending",
+      "status": "completed",
       "applicable": true,
-      "started_at": null,
-      "completed_at": null,
-      "approved_by_human": false,
-      "metrics": {}
+      "started_at": "2026-07-16T00:00:00-05:00",
+      "completed_at": "2026-07-16T00:00:00-05:00",
+      "approved_by_human": true,
+      "metrics": {
+        "duration_ms": 2340684,
+        "tool_uses": 49,
+        "subagent_tokens": 91953
+      }
     }
   },
   "closed": false

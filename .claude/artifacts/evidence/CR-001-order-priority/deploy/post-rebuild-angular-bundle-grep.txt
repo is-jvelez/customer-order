@@ -1,0 +1,19 @@
+=== Busqueda de cadenas nuevas de Prioridad en el bundle compilado /app/dist ===
+
+--- grep -rl 'chip-priority-' ---
+/app/dist/OrderFlowApp/server/chunk-OFM7JWV6.mjs
+/app/dist/OrderFlowApp/server/chunk-EL7OJJZA.mjs
+/app/dist/OrderFlowApp/browser/chunk-N2KCLBTW.js
+/app/dist/OrderFlowApp/browser/chunk-V4FMGOL6.js
+
+--- grep -rl 'priorityLabel' (nombre del pipe) ---
+/app/dist/OrderFlowApp/server/chunk-OFM7JWV6.mjs
+/app/dist/OrderFlowApp/server/chunk-PFKRRD6P.mjs
+/app/dist/OrderFlowApp/server/chunk-EL7OJJZA.mjs
+/app/dist/OrderFlowApp/browser/chunk-N2KCLBTW.js
+/app/dist/OrderFlowApp/browser/chunk-OQQYU2FN.js
+/app/dist/OrderFlowApp/browser/chunk-V4FMGOL6.js
+
+--- grep -o 'Baja\|Media\|Alta' en archivos que matchean chip-priority (etiquetas del pipe) ---
+/app/dist/OrderFlowApp/server/chunk-PFKRRD6P.mjs
+/app/dist/OrderFlowApp/browser/chunk-OQQYU2FN.js

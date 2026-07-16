@@ -1,0 +1,162 @@
+PHPUnit 10.5.63 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.32
+Configuration: /var/www/html/phpunit.xml
+
+...............................................................  63 / 101 ( 62%)
+......................................                          101 / 101 (100%)
+
+Time: 00:16.317, Memory: 42.50 MB
+
+Api Response (Tests\Unit\Http\Responses\ApiResponse)
+ ✔ Success ShouldReturnStandardPayload WhenCalled
+ ✔ Error ShouldReturnStandardPayload WhenCalled
+
+Customer Controller (Tests\Feature\Api\CustomerController)
+ ✔ Index ShouldReturnCustomerList WhenAuthenticated
+ ✔ Store ShouldReturn201 WhenPayloadIsValid
+ ✔ Store ShouldReturn409 WhenEmailIsDuplicated
+ ✔ Store ShouldReturn422 WhenPayloadIsInvalid
+ ✔ Show ShouldReturn404 WhenCustomerDoesNotExist
+ ✔ Destroy ShouldReturnSuccess WhenCustomerExists
+
+Customer Email (Tests\Unit\Domain\Customers\CustomerEmail)
+ ✔ Construct ShouldNormalizeEmail WhenInputContainsUppercaseAndSpaces
+ ✔ Construct ShouldThrowException WhenEmailFormatIsInvalid
+ ✔ Equals ShouldReturnTrue WhenEmailsAreEquivalentAfterNormalization
+
+Customer Mapper (Tests\Unit\Infrastructure\Persistence\CustomerMapper)
+ ✔ ToDomain ShouldMapModelToEntity WhenModelContainsValues
+ ✔ ToAttributes ShouldMapEntityToArray WhenEntityContainsValues
+
+Customer Service (Tests\Unit\Application\Customers\CustomerService)
+ ✔ GetById ShouldThrowException WhenCustomerDoesNotExist
+ ✔ Create ShouldThrowException WhenEmailAlreadyExists
+ ✔ Create ShouldPersistNewCustomer WhenEmailIsUnique
+ ✔ Update ShouldThrowException WhenCustomerDoesNotExist
+ ✔ Update ShouldThrowException WhenNewEmailAlreadyExists
+ ✔ Update ShouldPersistMergedValues WhenInputIsValid
+ ✔ Delete ShouldThrowException WhenCustomerDoesNotExist
+ ✔ Delete ShouldCallRepository WhenCustomerExists
+ ✔ GetCustomerStats ShouldReturnRepositoryStats WhenCalled
+
+Dashboard Controller (Tests\Feature\Api\DashboardController)
+ ✔ Stats ShouldMergeCustomerAndOrderStats WhenAuthenticated
+ ✔ OrdersByDay ShouldReturnSeries WhenAuthenticated
+ ✔ OrdersByMonth ShouldReturnSeries WhenAuthenticated
+
+Domain Entities (Tests\Unit\Domain\Entities\DomainEntities)
+ ✔ Customer ShouldExposeAllConstructorValues WhenCreated
+ ✔ OrderAndOrderItem ShouldExposeAllConstructorValues WhenCreated
+ ✔ Order ShouldExposeExplicitPriority WhenProvided
+
+Domain Exceptions (Tests\Unit\Domain\Exceptions\DomainExceptions)
+ ✔ Exceptions ShouldContainBusinessContext WhenInstantiated
+
+Domain Service Provider (Tests\Unit\Infrastructure\Providers\DomainServiceProvider)
+ ✔ Bindings ShouldResolveExpectedImplementations WhenContainerResolvesInterfaces
+
+Dto Construction (Tests\Unit\Application\DTOs\DtoConstruction)
+ ✔ DTOs ShouldExposeProvidedValues WhenConstructed
+ ✔ CreateOrderDTO ShouldExposeExplicitPriority WhenProvided
+ ✔ UpdateOrderDTO ShouldExposeExplicitPriority WhenProvided
+
+Eloquent Customer Repository Integration (Tests\Feature\Integration\EloquentCustomerRepositoryIntegration)
+ ✔ CreateAndFind ShouldPersistAndRetrieveCustomer WhenDataIsValid
+ ✔ Update ShouldPersistChanges WhenCustomerExists
+ ✔ DeleteAndStats ShouldSoftDisableCustomerAndReturnAggregates WhenCalled
+
+Eloquent Order Repository Integration (Tests\Feature\Integration\EloquentOrderRepositoryIntegration)
+ ✔ CreateAndFindById ShouldPersistOrderAndItems WhenDataIsValid
+ ✔ Create ShouldPersistDefaultPriority WhenOrderPriorityIsNotOverridden
+ ✔ Create ShouldPersistExplicitPriority WhenPriorityIsHigh
+ ✔ FindAll ShouldReturnOnlyHighPriorityOrders WhenPriorityFilterIsThree
+ ✔ FindAll ShouldApplyFiltersAndPagination WhenFiltersAreProvided
+ ✔ UpdateAndDelete ShouldModifyAndRemoveOrder WhenOrderExists
+ ✔ Update ShouldChangePriority WhenNewPriorityIsProvided
+ ✔ GetStatsAndOrdersByDay ShouldReturnAggregates WhenDataExists
+ ✔ GetOrdersByMonth ShouldReturnArray WhenQueryExecutes
+
+Example (Tests\Feature\Example)
+ ✔ The application returns a successful response
+
+Example (Tests\Unit\Example)
+ ✔ That true is true
+
+Jwt Auth Middleware (Tests\Unit\Http\Middleware\JwtAuthMiddleware)
+ ✔ Handle ShouldReturn401 WhenAuthorizationHeaderIsMissing
+ ✔ Handle ShouldReturn401 WhenVerifierThrowsException
+ ✔ Handle ShouldMergeAuthPayloadAndContinue WhenTokenIsValid
+
+Jwt Authentication Feature (Tests\Feature\Api\JwtAuthenticationFeature)
+ ✔ CustomersEndpoint ShouldReturn401 WhenTokenIsMissing
+ ✔ CustomersEndpoint ShouldReturn401 WhenTokenIsInvalid
+ ✔ CustomersEndpoint ShouldPass WhenTokenIsValid
+
+Jwt Verifier (Tests\Unit\Infrastructure\Security\JwtVerifier)
+ ✔ Verify ShouldReturnPayload WhenTokenIsValid
+ ✔ Verify ShouldThrowException WhenRequiredClaimsAreMissing
+ ✔ Verify ShouldThrowException WhenIssuerIsInvalid
+ ✔ Verify ShouldThrowException WhenAudienceIsInvalid
+
+Order Controller (Tests\Feature\Api\OrderController)
+ ✔ Index ShouldReturnOrdersAndPagination WhenAuthenticated
+ ✔ Store ShouldReturn201 WhenPayloadIsValid
+ ✔ Store ShouldReturn422 WhenCustomerDoesNotExist
+ ✔ Store ShouldReturn422 WhenPayloadIsInvalid
+ ✔ Store ShouldReturn422 WhenPriorityIsInvalid with data set "zero"
+ ✔ Store ShouldReturn422 WhenPriorityIsInvalid with data set "four"
+ ✔ Store ShouldReturn422 WhenPriorityIsInvalid with data set "nine"
+ ✔ Store ShouldReturn422 WhenPriorityIsInvalid with data set "non_numeric"
+ ✔ Store ShouldPersistDefaultPriority WhenPriorityIsOmitted
+ ✔ Store ShouldPersistExplicitPriority WhenPriorityIsThree
+ ✔ Index ShouldPassPriorityFilter WhenQueryParamIsProvided
+ ✔ Complete ShouldReturn409 WhenStatusTransitionIsInvalid
+ ✔ Cancel ShouldReturn404 WhenOrderDoesNotExist
+ ✔ Destroy ShouldReturnSuccess WhenOrderExists
+
+Order Mapper (Tests\Unit\Infrastructure\Persistence\OrderMapper)
+ ✔ ToDomain ShouldMapOrderWithoutItems WhenRelationIsNotLoaded
+ ✔ ToDomain ShouldDefaultPriorityToMedium WhenModelPriorityIsNotSet
+ ✔ ToDomain ShouldMapOrderAndItems WhenRelationIsLoaded
+
+Order Model Cast (Tests\Unit\Infrastructure\Persistence\OrderModelCast)
+ ✔ Priority ShouldBeFillable WhenModelIsDefined
+ ✔ Priority ShouldCastToOrderPriorityEnum WhenAttributeIsSet
+ ✔ Priority ShouldCastLowAndMediumValues WhenAttributeIsSet
+
+Order Service (Tests\Unit\Application\Orders\OrderService)
+ ✔ GetById ShouldThrowException WhenOrderDoesNotExist
+ ✔ Create ShouldThrowException WhenCustomerDoesNotExist
+ ✔ Create ShouldMapItemsAndPersistOrder WhenInputIsValid
+ ✔ Update ShouldThrowException WhenOrderDoesNotExist
+ ✔ Update ShouldPersistNotes WhenOrderExists
+ ✔ Complete ShouldThrowException WhenTransitionIsInvalid
+ ✔ Complete ShouldUpdateStatus WhenTransitionIsValid
+ ✔ Cancel ShouldThrowException WhenTransitionIsInvalid
+ ✔ Cancel ShouldUpdateStatus WhenTransitionIsValid
+ ✔ Delete ShouldThrowException WhenOrderDoesNotExist
+ ✔ Delete ShouldCallRepository WhenOrderExists
+ ✔ StatsMethods ShouldDelegateToRepository WhenCalled
+
+Order Status (Tests\Unit\Domain\Orders\OrderStatus)
+ ✔ CanTransitionTo ShouldAllowValidPendingTransitions WhenTargetIsAllowed
+ ✔ CanTransitionTo ShouldAllowValidInProgressTransitions WhenTargetIsAllowed
+ ✔ CanTransitionTo ShouldRejectInvalidTransitions WhenSourceIsTerminal
+
+Order Status Constants (Tests\Unit\Domain\Shared\OrderStatusConstants)
+ ✔ ALL ShouldContainEveryStatusConstant WhenRead
+
+Request Rules (Tests\Unit\Http\Requests\RequestRules)
+ ✔ CreateCustomerRequest ShouldDefineExpectedRulesAndMessages WhenCalled
+ ✔ UpdateCustomerRequest ShouldDefineOptionalRules WhenCalled
+ ✔ CreateOrderRequest ShouldDefineNestedItemRulesAndMessages WhenCalled
+ ✔ CreateOrderRequest ShouldDefinePriorityAsOptionalIn1To3 WhenCalled
+ ✔ UpdateOrderRequest ShouldAllowNotesAndPriority WhenCalled
+
+Resource Transformation (Tests\Unit\Http\Resources\ResourceTransformation)
+ ✔ CustomerResource ShouldTransformDomainEntity WhenToArrayIsCalled
+ ✔ CustomerCollection ShouldTransformCollection WhenToArrayIsCalled
+ ✔ OrderResourceAndCollection ShouldTransformOrderWithItems WhenToArrayIsCalled
+
+OK (101 tests, 312 assertions)

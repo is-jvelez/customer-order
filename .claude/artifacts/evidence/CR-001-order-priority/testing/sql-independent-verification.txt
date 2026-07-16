@@ -1,0 +1,50 @@
+Verificacion SQL independiente — testing-agent (CR-001-order-priority)
+================================================================================
+Fecha: 2026-07-16
+Metodo: docker exec sqlserver /opt/mssql-tools18/bin/sqlcmd (lecturas directas
+contra la BD real ya migrada, mas un INSERT de prueba con ROLLBACK explicito
+para confirmar el CHECK constraint). Permitido por guard-testing.ps1 (solo
+bloquea migrate:fresh/refresh/reset, db:wipe, drop database, deploys, git
+push, gh pr create, rm -rf). Esta es una RE-CONFIRMACION propia (no reuso de
+evidencia de sql-agent), justificada porque sql-agent no pudo ejecutar
+sqlcmd (bloqueado por guard-sql-apply.ps1) y solo el orquestador reporto
+verificacion directa en el blueprint sin volcar salida cruda a un archivo de
+evidencia — se re-corrio para dejar salida reproducible documentada.
+
+1) Columna Priority — tipo/nullability:
+   COLUMN_NAME=Priority DATA_TYPE=tinyint IS_NULLABLE=NO
+   -> Coincide con el contrato (TINYINT NOT NULL).
+
+2) CHECK constraint:
+   CHK_Orders_Priority: ([Priority]=(3) OR [Priority]=(2) OR [Priority]=(1))
+   -> Coincide con "Priority IN (1,2,3)".
+
+3) Indice:
+   IX_Orders_Priority sobre columna Priority. Presente.
+
+4) Filas preexistentes (5, Id 1-5), Total y Priority:
+   Id=1 CustomerId=1 Status=Pending    Total=949.99 Priority=2
+   Id=2 CustomerId=1 Status=Completed  Total=375.50 Priority=2
+   Id=3 CustomerId=2 Status=InProgress Total=120.00 Priority=2
+   Id=4 CustomerId=3 Status=Cancelled  Total=150.00 Priority=2
+   Id=5 CustomerId=2 Status=Pending    Total=124.99 Priority=2
+   -> Los 5 pedidos existentes en Priority=2 (default). Totales identicos a
+      los reportados por sql-agent en el blueprint (949.99, 375.50, 120.00,
+      150.00, 124.99) -> confirma que los triggers de Total no fueron
+      alterados por el ALTER TABLE ADD Priority.
+
+5) Triggers intactos:
+   TR_Orders_UpdatedAt (Orders, is_disabled=0)
+   TR_OrderItems_RecalcTotal (OrderItems, is_disabled=0)
+   -> Exactamente los 2 triggers esperados, ninguno deshabilitado, ninguno
+      nuevo.
+
+6) CHECK constraint rechaza valores invalidos:
+   INSERT INTO Orders (CustomerId, Status, Priority) VALUES (1,'Pending',4)
+   dentro de BEGIN TRAN / ROLLBACK -> Msg 547, "conflicted with the CHECK
+   constraint CHK_Orders_Priority". Statement terminated. Conteo de Orders
+   despues del rollback: 5 (sin cambios, ninguna fila de prueba persistida).
+
+CONCLUSION: golden master de SQL (esquema + triggers) CONFIRMADO de forma
+independiente. Sin discrepancias respecto a lo reportado por sql-agent en el
+blueprint.

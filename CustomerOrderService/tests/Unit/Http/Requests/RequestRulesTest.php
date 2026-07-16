@@ -44,14 +44,31 @@ class RequestRulesTest extends TestCase
         $this->assertArrayHasKey('items.required', $messages);
     }
 
-    public function test_UpdateOrderRequest_ShouldAllowOnlyNotes_WhenCalled(): void
+    public function test_CreateOrderRequest_ShouldDefinePriorityAsOptionalIn1To3_WhenCalled(): void
+    {
+        $request = new CreateOrderRequest();
+        $rules = $request->rules();
+
+        $this->assertArrayHasKey('priority', $rules);
+        $this->assertContains('sometimes', $rules['priority']);
+        $this->assertContains('integer', $rules['priority']);
+        $this->assertContains('in:1,2,3', $rules['priority']);
+    }
+
+    // NOTA CR-001: este assert cambia de assertCount(1,...) a assertCount(2,...)
+    // porque el CR exige que 'priority' sea editable también en UpdateOrderRequest
+    // (sección 4.2: "Form Request de creación/edición"). Cambio requerido por el
+    // contrato del CR, no una expansión de alcance.
+    public function test_UpdateOrderRequest_ShouldAllowNotesAndPriority_WhenCalled(): void
     {
         $request = new UpdateOrderRequest();
         $rules = $request->rules();
 
         $this->assertTrue($request->authorize());
-        $this->assertCount(1, $rules);
+        $this->assertCount(2, $rules);
         $this->assertArrayHasKey('notes', $rules);
+        $this->assertArrayHasKey('priority', $rules);
+        $this->assertContains('in:1,2,3', $rules['priority']);
     }
 }
 

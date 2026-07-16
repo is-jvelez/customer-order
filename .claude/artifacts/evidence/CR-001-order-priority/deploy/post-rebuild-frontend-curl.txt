@@ -1,0 +1,21 @@
+=== curl -I http://localhost:4200/ ===
+HTTP/1.1 200 OK
+X-Powered-By: Express
+content-type: text/html;charset=UTF-8
+Date: Thu, 16 Jul 2026 21:57:03 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+
+=== curl http://localhost:4200/orders (SPA, probablemente requiere auth client-side, solo confirma que el server responde) ===
+<!doctype html>
+<html lang="en" data-beasties-container="">
+  <head>
+    <meta charset="utf-8">
+    <title>OrderFlowApp</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <style>@font-face{font-family:'Roboto';font-style:normal;font-weight:300;f

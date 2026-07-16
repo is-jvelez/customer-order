@@ -7,6 +7,7 @@ use App\Domain\Customers\ValueObjects\CustomerEmail;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Http\Resources\Customer\CustomerCollection;
 use App\Http\Resources\Customer\CustomerResource;
 use App\Http\Resources\Order\OrderCollection;
@@ -65,6 +66,7 @@ class ResourceTransformationTest extends TestCase
                 new OrderItem(11, 9, 'USB Cable', 2, 10.0),
                 new OrderItem(12, 9, 'Adapter', 1, 20.0),
             ],
+            priority: OrderPriority::High,
         );
 
         $resourceArray = (new OrderResource($order))->toArray(Request::create('/'));
@@ -75,6 +77,7 @@ class ResourceTransformationTest extends TestCase
         $this->assertSame('Completed', $resourceArray['status']);
         $this->assertCount(2, $resourceArray['items']);
         $this->assertSame('USB Cable', $resourceArray['items'][0]['description']);
+        $this->assertSame(3, $resourceArray['priority']);
         $this->assertCount(1, $collectionArray);
         $this->assertSame(9, $collectionArray[0]['id']);
     }

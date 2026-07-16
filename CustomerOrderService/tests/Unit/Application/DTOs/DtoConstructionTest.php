@@ -7,6 +7,7 @@ use App\Application\Customers\DTOs\UpdateCustomerDTO;
 use App\Application\Orders\DTOs\CreateOrderDTO;
 use App\Application\Orders\DTOs\OrderItemDTO;
 use App\Application\Orders\DTOs\UpdateOrderDTO;
+use App\Enums\OrderPriority;
 use PHPUnit\Framework\TestCase;
 
 class DtoConstructionTest extends TestCase
@@ -37,6 +38,26 @@ class DtoConstructionTest extends TestCase
         $this->assertSame(5, $createOrder->customerId);
         $this->assertCount(1, $createOrder->items);
         $this->assertSame('Updated note', $updateOrder->notes);
+        $this->assertSame(OrderPriority::Medium, $createOrder->priority);
+        $this->assertNull($updateOrder->priority);
+    }
+
+    public function test_CreateOrderDTO_ShouldExposeExplicitPriority_WhenProvided(): void
+    {
+        $dto = new CreateOrderDTO(
+            customerId: 7,
+            items: [new OrderItemDTO(description: 'Chair', quantity: 1, unitPrice: 99.0)],
+            priority: OrderPriority::High,
+        );
+
+        $this->assertSame(OrderPriority::High, $dto->priority);
+    }
+
+    public function test_UpdateOrderDTO_ShouldExposeExplicitPriority_WhenProvided(): void
+    {
+        $dto = new UpdateOrderDTO(notes: 'n', priority: OrderPriority::Low);
+
+        $this->assertSame(OrderPriority::Low, $dto->priority);
     }
 }
 

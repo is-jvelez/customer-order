@@ -1,0 +1,117 @@
+GOLDEN MASTER — Comportamiento de los triggers Total / UpdatedAt (Orders)
+================================================================================
+CR: CR-001-order-priority
+Fecha de captura: 2026-07-16
+Método de captura: análisis estático de flyway/sql/V5__triggers.sql (fuente
+de verdad versionada, aplicada según `flyway info` = V10). NO se insertó
+ningún pedido de prueba contra la instancia real ni se ejecutó ninguna
+transacción de rollback vía sqlcmd: el hook PreToolUse `guard-sql-apply.ps1`
+bloquea cualquier comando que contenga la cadena `sqlcmd`, incluyendo
+sesiones de solo lectura o con ROLLBACK, precisamente para impedir que este
+agente toque el servidor real sin aprobación humana explícita. Se documenta
+aquí el comportamiento determinista de los triggers (derivable de su
+definición SQL) y se usa como línea base un pedido YA EXISTENTE en el seed
+(V6__seed_data.sql) cuyos items son conocidos, en lugar de insertar uno
+nuevo.
+
+--------------------------------------------------------------------------------
+1. Definición vigente de los triggers (verbatim, flyway/sql/V5__triggers.sql)
+--------------------------------------------------------------------------------
+
+-- Trigger 1: actualiza UpdatedAt en Orders cuando se edita la orden
+CREATE OR ALTER TRIGGER TR_Orders_UpdatedAt
+ON Orders
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Orders
+    SET UpdatedAt = GETUTCDATE()
+    FROM Orders o
+    INNER JOIN inserted i ON o.Id = i.Id;
+END
+
+-- Trigger 2: recalcula el Total de la orden al insertar/editar/borrar items
+CREATE OR ALTER TRIGGER TR_OrderItems_RecalcTotal
+ON OrderItems
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @AffectedOrderIds TABLE (OrderId INT);
+    INSERT INTO @AffectedOrderIds (OrderId)
+    SELECT DISTINCT OrderId FROM inserted
+    UNION
+    SELECT DISTINCT OrderId FROM deleted;
+
+    UPDATE Orders
+    SET
+        Total     = ISNULL((
+            SELECT SUM(Quantity * UnitPrice)
+            FROM OrderItems
+            WHERE OrderId = o.Id
+        ), 0.00),
+        UpdatedAt = GETUTCDATE()
+    FROM Orders o
+    INNER JOIN @AffectedOrderIds a ON o.Id = a.OrderId;
+END
+
+Ambos triggers operan solo sobre columnas Total, UpdatedAt (y su disparo
+depende de INSERT/UPDATE/DELETE en Orders/OrderItems). Ninguno referencia ni
+depende de la lista completa de columnas de Orders: usan `SET Total = ...`
+y `SET UpdatedAt = ...` explícitos por nombre de columna, y el filtro/JOIN
+es por Id. Por lo tanto, añadir una columna nueva (Priority) a Orders
+mediante ALTER TABLE ... ADD ... NO altera estas definiciones ni su
+comportamiento: los triggers no usan `SELECT *` ni `INSERT ... VALUES`
+posicional en Orders, así que no son sensibles al número de columnas.
+
+--------------------------------------------------------------------------------
+2. Pedido de prueba conocido (línea base) — usa datos YA sembrados en V6
+--------------------------------------------------------------------------------
+
+OrderId = 1 (CustomerId=1, Status='Pending', Notes='Entregar en horario de
+oficina'), con items (de flyway/sql/V6__seed_data.sql):
+
+  Item                    Quantity  UnitPrice
+  Laptop HP 15"           1         899.99
+  Mouse inalámbrico       2         25.00
+
+Cálculo esperado por TR_OrderItems_RecalcTotal (determinista, SUM(Quantity*UnitPrice)):
+  Total = (1 * 899.99) + (2 * 25.00) = 899.99 + 50.00 = 949.99
+
+UpdatedAt: el trigger lo fija a GETUTCDATE() en el momento del último
+INSERT/UPDATE/DELETE sobre OrderItems para ese OrderId (valor de reloj, no
+verificable estáticamente; el criterio de aceptación no es el valor exacto
+de timestamp sino que SIGA siendo recalculado por el mismo trigger sin
+cambios de lógica).
+
+BASELINE (a verificar contra la BD real en el checkpoint de aprobación,
+antes y después de aplicar V11):
+  Order.Id = 1  ->  Total = 949.99  (calculado por TR_OrderItems_RecalcTotal)
+
+--------------------------------------------------------------------------------
+3. Plan de verificación POST-migración (para ejecutar tras aprobación humana,
+   fuera del alcance de este agente — no se ejecuta aquí)
+--------------------------------------------------------------------------------
+
+a) Confirmar vía INFORMATION_SCHEMA.COLUMNS que Orders.Priority existe:
+   DATA_TYPE = 'tinyint', IS_NULLABLE = 'NO', COLUMN_DEFAULT contiene '2'.
+
+b) Confirmar que las filas preexistentes (Id 1..5, o 1..6 si existe un 6º
+   pedido no versionado — ver nota en schema-before.txt) tienen Priority = 2.
+
+c) Re-consultar Orders.Id = 1 y confirmar Total = 949.99 (sin cambios) tras
+   aplicar V11 — demuestra que ALTER TABLE ADD Priority no dispara ni altera
+   TR_OrderItems_RecalcTotal.
+
+d) Insertar un OrderItem nuevo sobre un pedido de prueba (en una transacción
+   que se revierta, o sobre un pedido creado y luego borrado en un entorno
+   de prueba) y confirmar que Total se recalcula igual que antes de V11
+   (misma fórmula SUM(Quantity*UnitPrice)) y que UpdatedAt se actualiza,
+   confirmando que los triggers siguen intactos y Priority no participa en
+   su lógica.
+
+e) Confirmar que Orders sigue teniendo únicamente los triggers
+   TR_Orders_UpdatedAt y TR_OrderItems_RecalcTotal (ninguno nuevo, ninguno
+   modificado): `SELECT name, is_disabled FROM sys.triggers WHERE
+   parent_id = OBJECT_ID('Orders') OR parent_id = OBJECT_ID('OrderItems');`

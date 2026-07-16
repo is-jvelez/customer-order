@@ -1,11 +1,12 @@
 import { OrderItem, CreateOrderItemRequest } from './order-item.model';
-import { OrderStatus } from '../../../../shared/constants/app.constants';
+import { OrderPriority, OrderStatus } from '../../../../shared/constants/app.constants';
 
 export interface Order {
   id: number;
   customerId: number;
   customerName: string | null;
   status: OrderStatus;
+  priority: OrderPriority;
   notes: string | null;
   total: number;
   items: OrderItem[];
@@ -20,10 +21,12 @@ export interface OrderFilterParams {
   customer_id?: number;
   date_from?: string;
   date_to?: string;
+  priority?: OrderPriority | number;
 }
 
 export interface CreateOrderRequest {
   customerId: number;
   notes?: string | null;
+  priority?: OrderPriority;
   items: CreateOrderItemRequest[];
 }

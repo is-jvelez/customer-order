@@ -2,6 +2,8 @@
 
 namespace App\Application\Orders\DTOs;
 
+use App\Enums\OrderPriority;
+
 class CreateOrderDTO
 {
     /** @param OrderItemDTO[] $items */
@@ -9,5 +11,6 @@ class CreateOrderDTO
         public readonly int     $customerId,
         public readonly array   $items,
         public readonly ?string $notes = null,
+        public readonly OrderPriority $priority = OrderPriority::Medium,
     ) {}
 }

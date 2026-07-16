@@ -1,0 +1,10 @@
+=== docker compose ps (antes del rebuild) ===
+NAME                 IMAGE                                                                                                    COMMAND                  SERVICE              CREATED       STATUS                 PORTS
+auth-api             customer-order-auth-api                                                                                  "dotnet AuthService.…"   auth-api             5 hours ago   Up 5 hours (healthy)   0.0.0.0:5000->8080/tcp, [::]:5000->8080/tcp
+customer-order-api   customer-order-customer-order-api                                                                        "docker-php-entrypoi…"   customer-order-api   5 hours ago   Up 5 hours (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+order-flow-app       customer-order-order-flow-app                                                                            "docker-entrypoint.s…"   order-flow-app       5 hours ago   Up 5 hours (healthy)   0.0.0.0:4200->4000/tcp, [::]:4200->4000/tcp
+sqlserver            mcr.microsoft.com/mssql/server@sha256:d01cc45e6b920eff17abc60295b8748821e09b678f0fcf54959ef37406b80203   "/opt/mssql/bin/laun…"   sqlserver            5 hours ago   Up 5 hours (healthy)   0.0.0.0:14330->1433/tcp, [::]:14330->1433/tcp
+
+=== Fechas de creacion de imagenes ANTES del rebuild ===
+customer-order-customer-order-api: 2026-07-14T13:43:26.152638853Z
+customer-order-order-flow-app: 2026-07-14T13:42:14.414395014Z

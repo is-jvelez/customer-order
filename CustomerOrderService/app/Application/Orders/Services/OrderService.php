@@ -52,6 +52,7 @@ class OrderService implements IOrderService
             createdAt:  null,
             updatedAt:  null,
             items:      [],
+            priority:   $dto->priority,
         );
 
         $items = array_map(
@@ -84,6 +85,7 @@ class OrderService implements IOrderService
             createdAt:  $order->createdAt,
             updatedAt:  $order->updatedAt,
             items:      $order->items,
+            priority:   $dto->priority ?? $order->priority,
         );
 
         return $this->orderRepository->update($updated);
@@ -119,6 +121,7 @@ class OrderService implements IOrderService
             createdAt:  $order->createdAt,
             updatedAt:  $order->updatedAt,
             items:      $order->items,
+            priority:   $order->priority,
         ));
     }
 

@@ -7,6 +7,7 @@ use App\Application\Orders\DTOs\OrderItemDTO;
 use App\Application\Orders\DTOs\UpdateOrderDTO;
 use App\Application\Shared\Interfaces\IOrderService;
 use App\Domain\Customers\Exceptions\CustomerNotFoundException;
+use App\Enums\OrderPriority;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
@@ -29,6 +30,7 @@ class OrderController extends Controller
             'customer_id' => $request->query('customer_id'),
             'date_from'   => $request->query('date_from'),
             'date_to'     => $request->query('date_to'),
+            'priority'    => $request->query('priority'),
             'per_page'    => $request->query('per_page', 15),
             'page'        => $request->query('page', 1),
         ];
@@ -62,6 +64,7 @@ class OrderController extends Controller
                 customerId: (int) $request->input('customer_id'),
                 items:      $items,
                 notes:      $request->input('notes'),
+                priority:   OrderPriority::from((int) ($request->input('priority') ?? OrderPriority::Medium->value)),
             );
 
             $order = $this->orderService->create($dto);
@@ -83,7 +86,12 @@ class OrderController extends Controller
 
     public function update(UpdateOrderRequest $request, int $id): JsonResponse
     {
-        $dto   = new UpdateOrderDTO(notes: $request->input('notes'));
+        $dto   = new UpdateOrderDTO(
+            notes:    $request->input('notes'),
+            priority: $request->has('priority') && $request->input('priority') !== null
+                ? OrderPriority::from((int) $request->input('priority'))
+                : null,
+        );
         $order = $this->orderService->update($id, $dto);
         $data  = (new OrderResource($order))->toArray($request);
 

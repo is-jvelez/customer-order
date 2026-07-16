@@ -1,0 +1,439 @@
+ Image customer-order-order-flow-app Building 
+ Image customer-order-auth-api Building 
+ Image customer-order-customer-order-api Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.03kB 0.0s done
+#1 DONE 0.0s
+
+#2 [order-flow-app internal] load build definition from Dockerfile
+#2 transferring dockerfile: 434B 0.0s done
+#2 DONE 0.1s
+
+#3 [customer-order-api internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.08kB 0.0s done
+#3 DONE 0.1s
+
+#4 [order-flow-app internal] load metadata for docker.io/library/node:22.14.0-alpine
+#4 DONE 0.1s
+
+#5 [customer-order-api internal] load metadata for docker.io/library/composer:2
+#5 DONE 0.0s
+
+#6 [order-flow-app internal] load .dockerignore
+#6 transferring context: 92B done
+#6 DONE 0.0s
+
+#7 [order-flow-app internal] load build context
+#7 DONE 0.0s
+
+#8 [order-flow-app deps 1/4] FROM docker.io/library/node:22.14.0-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944
+#8 resolve docker.io/library/node:22.14.0-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 0.0s done
+#8 DONE 0.0s
+
+#7 [order-flow-app internal] load build context
+#7 transferring context: 59.39kB 0.0s done
+#7 DONE 0.1s
+
+#9 [order-flow-app deps 2/4] WORKDIR /app
+#9 CACHED
+
+#10 [order-flow-app deps 3/4] COPY package*.json ./
+#10 CACHED
+
+#11 [order-flow-app deps 4/4] RUN npm ci
+#11 CACHED
+
+#12 [order-flow-app build 1/3] WORKDIR /app
+#12 CACHED
+
+#13 [order-flow-app build 2/3] COPY . .
+#13 DONE 0.1s
+
+#14 [customer-order-api internal] load metadata for docker.io/library/php:8.3.32-cli-bookworm
+#14 ...
+
+#15 [auth] library/php:pull token for registry-1.docker.io
+#15 DONE 0.0s
+
+#16 [order-flow-app build 3/3] RUN npm run build
+#16 1.383 
+#16 1.383 > order-flow-app@0.0.0 build
+#16 1.383 > ng build
+#16 1.383 
+#16 ...
+
+#14 [customer-order-api internal] load metadata for docker.io/library/php:8.3.32-cli-bookworm
+#14 DONE 1.9s
+
+#17 [customer-order-api internal] load .dockerignore
+#17 transferring context: 202B done
+#17 DONE 0.0s
+
+#18 [customer-order-api] FROM docker.io/library/composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760
+#18 resolve docker.io/library/composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 0.0s done
+#18 DONE 0.0s
+
+#19 [customer-order-api stage-0 1/6] FROM docker.io/library/php:8.3.32-cli-bookworm@sha256:a4fcf31ffb94b8d19b84514926b5a2cddf22a38b1e29922f8d3e8a933091f806
+#19 resolve docker.io/library/php:8.3.32-cli-bookworm@sha256:a4fcf31ffb94b8d19b84514926b5a2cddf22a38b1e29922f8d3e8a933091f806 0.0s done
+#19 DONE 0.0s
+
+#20 [customer-order-api internal] load build context
+#20 transferring context: 91.29kB 0.0s done
+#20 DONE 0.0s
+
+#21 [customer-order-api stage-0 3/6] RUN apt-get update && apt-get install -y --no-install-recommends         gnupg2 curl apt-transport-https unixodbc-dev libgssapi-krb5-2         unzip git libzip-dev libonig-dev     && curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list     && apt-get update     && ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18     && pecl install sqlsrv pdo_sqlsrv     && docker-php-ext-enable sqlsrv pdo_sqlsrv     && docker-php-ext-install mbstring bcmath zip     && rm -rf /var/lib/apt/lists/*
+#21 CACHED
+
+#22 [customer-order-api stage-0 2/6] WORKDIR /var/www/html
+#22 CACHED
+
+#23 [customer-order-api stage-0 4/6] COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+#23 CACHED
+
+#24 [customer-order-api stage-0 5/6] COPY . .
+#24 DONE 0.2s
+
+#16 [order-flow-app build 3/3] RUN npm run build
+#16 3.065 ❯ Building...
+#16 ...
+
+#25 [customer-order-api stage-0 6/6] RUN composer install --no-dev --optimize-autoloader --no-interaction
+#25 0.500 Installing dependencies from lock file
+#25 0.507 Verifying lock file contents can be installed on current platform.
+#25 1.307 Package operations: 90 installs, 0 updates, 0 removals
+#25 1.346   - Downloading voku/portable-ascii (2.1.1)
+#25 1.362   - Downloading symfony/polyfill-php80 (v1.37.0)
+#25 1.378   - Downloading symfony/polyfill-mbstring (v1.37.0)
+#25 1.381   - Downloading symfony/polyfill-ctype (v1.37.0)
+#25 1.392   - Downloading phpoption/phpoption (1.9.5)
+#25 1.401   - Downloading graham-campbell/result-type (v1.1.4)
+#25 1.407   - Downloading vlucas/phpdotenv (v5.6.3)
+#25 1.411   - Downloading symfony/css-selector (v7.4.9)
+#25 1.424   - Downloading tijsverkoyen/css-to-inline-styles (v2.4.0)
+#25 1.425   - Downloading symfony/deprecation-contracts (v3.7.0)
+#25 1.427   - Downloading symfony/var-dumper (v7.4.8)
+#25 1.434   - Downloading symfony/polyfill-uuid (v1.37.0)
+#25 1.441   - Downloading symfony/uid (v7.4.9)
+#25 1.447   - Downloading symfony/routing (v7.4.9)
+#25 1.449   - Downloading symfony/process (v7.4.11)
+#25 1.451   - Downloading symfony/polyfill-php83 (v1.37.0)
+#25 1.480   - Downloading symfony/polyfill-intl-normalizer (v1.37.0)
+#25 1.480   - Downloading symfony/polyfill-intl-idn (v1.37.0)
+#25 1.486   - Downloading symfony/mime (v7.4.9)
+#25 1.488   - Downloading psr/container (2.0.2)
+#25 1.490   - Downloading symfony/service-contracts (v3.7.0)
+#25 1.493   - Downloading psr/event-dispatcher (1.0.0)
+#25 1.501   - Downloading symfony/event-dispatcher-contracts (v3.7.0)
+#25 1.532   - Downloading symfony/event-dispatcher (v7.4.9)
+#25 1.533   - Downloading psr/log (3.0.2)
+#25 1.537   - Downloading doctrine/lexer (3.0.1)
+#25 1.544   - Downloading egulias/email-validator (4.0.4)
+#25 1.545   - Downloading symfony/mailer (v7.4.8)
+#25 1.548   - Downloading symfony/http-foundation (v7.4.8)
+#25 1.549   - Downloading symfony/polyfill-php85 (v1.37.0)
+#25 1.555   - Downloading symfony/error-handler (v7.4.8)
+#25 1.557   - Downloading symfony/http-kernel (v7.4.11)
+#25 1.558   - Downloading symfony/finder (v7.4.8)
+#25 1.564   - Downloading symfony/polyfill-intl-grapheme (v1.37.0)
+#25 1.566   - Downloading symfony/string (v7.4.11)
+#25 1.570   - Downloading symfony/console (v7.4.11)
+#25 1.582   - Downloading ramsey/collection (2.1.1)
+#25 1.583   - Downloading brick/math (0.14.8)
+#25 1.596   - Downloading ramsey/uuid (4.9.2)
+#25 1.619   - Downloading psr/simple-cache (3.0.0)
+#25 1.624   - Downloading nunomaduro/termwind (v2.4.0)
+#25 1.656   - Downloading symfony/translation-contracts (v3.7.0)
+#25 1.656   - Downloading symfony/translation (v7.4.10)
+#25 1.656   - Downloading psr/clock (1.0.0)
+#25 1.656   - Downloading symfony/clock (v7.4.8)
+#25 1.656   - Downloading carbonphp/carbon-doctrine-types (3.2.0)
+#25 1.656   - Downloading nesbot/carbon (3.11.4)
+#25 1.656   - Downloading monolog/monolog (3.10.0)
+#25 1.668   - Downloading psr/http-message (2.0)
+#25 1.672   - Downloading psr/http-factory (1.1.0)
+#25 1.672   - Downloading league/uri-interfaces (7.8.1)
+#25 1.673   - Downloading league/uri (7.8.1)
+#25 1.674   - Downloading league/mime-type-detection (1.16.0)
+#25 1.679   - Downloading league/flysystem-local (3.31.0)
+#25 1.681   - Downloading league/flysystem (3.34.0)
+#25 1.712   - Downloading nette/utils (v4.1.4)
+#25 1.717   - Downloading nette/schema (v1.3.5)
+#25 1.723   - Downloading dflydev/dot-access-data (v3.0.3)
+#25 1.727   - Downloading league/config (v1.2.0)
+#25 1.728   - Downloading league/commonmark (2.8.2)
+#25 1.731   - Downloading laravel/serializable-closure (v2.0.13)
+#25 1.734   - Downloading laravel/prompts (v0.3.17)
+#25 1.741   - Downloading guzzlehttp/uri-template (v1.0.5)
+#25 1.743   - Downloading psr/http-client (1.0.3)
+#25 1.745   - Downloading ralouphie/getallheaders (3.0.3)
+#25 1.748   - Downloading guzzlehttp/psr7 (2.9.0)
+#25 1.756   - Downloading guzzlehttp/promises (2.3.0)
+#25 1.758   - Downloading guzzlehttp/guzzle (7.10.0)
+#25 1.760   - Downloading fruitcake/php-cors (v1.4.0)
+#25 1.781   - Downloading dragonmantank/cron-expression (v3.6.0)
+#25 1.781   - Downloading doctrine/inflector (2.1.0)
+#25 1.791   - Downloading laravel/framework (v11.52.0)
+#25 1.793   - Downloading spatie/laravel-package-tools (1.93.0)
+#25 1.798   - Downloading phpstan/phpdoc-parser (2.3.2)
+#25 1.803   - Downloading nikic/php-parser (v5.7.0)
+#25 1.805   - Downloading myclabs/deep-copy (1.13.4)
+#25 1.811   - Downloading dedoc/scramble (v0.13.22)
+#25 1.814   - Downloading psr/cache (3.0.0)
+#25 1.816   - Downloading doctrine/deprecations (1.1.6)
+#25 1.819   - Downloading doctrine/dbal (4.4.3)
+#25 1.823   - Downloading firebase/php-jwt (v7.0.5)
+#25 1.828   - Downloading psy/psysh (v0.12.22)
+#25 1.835   - Downloading laravel/tinker (v2.11.1)
+#25 1.837   - Downloading spatie/php-structure-discoverer (2.4.2)
+#25 1.840   - Downloading phpdocumentor/reflection-common (2.2.0)
+#25 1.842   - Downloading phpdocumentor/type-resolver (2.0.0)
+#25 1.851   - Downloading webmozart/assert (2.3.0)
+#25 1.853   - Downloading phpdocumentor/reflection-docblock (6.0.3)
+#25 1.866   - Downloading spatie/laravel-data (4.23.0)
+#25 1.871   - Downloading spatie/laravel-query-builder (6.4.4)
+#25 1.915   0/90 [>---------------------------]   0%
+#25 3.693   2/90 [>---------------------------]   2%
+#25 4.215  11/90 [===>------------------------]  12%
+#25 4.331  18/90 [=====>----------------------]  20%
+#25 4.664  29/90 [=========>------------------]  32%
+#25 5.266  38/90 [===========>----------------]  42%
+#25 5.542  46/90 [==============>-------------]  51%
+#25 5.975  58/90 [==================>---------]  64%
+#25 6.331  70/90 [=====================>------]  77%
+#25 6.539  72/90 [======================>-----]  80%
+#25 7.081  81/90 [=========================>--]  90%
+#25 7.879  90/90 [============================] 100%
+#25 7.880   - Installing voku/portable-ascii (2.1.1): Extracting archive
+#25 7.886   - Installing symfony/polyfill-php80 (v1.37.0): Extracting archive
+#25 7.890   - Installing symfony/polyfill-mbstring (v1.37.0): Extracting archive
+#25 7.896   - Installing symfony/polyfill-ctype (v1.37.0): Extracting archive
+#25 7.898   - Installing phpoption/phpoption (1.9.5): Extracting archive
+#25 7.905   - Installing graham-campbell/result-type (v1.1.4): Extracting archive
+#25 7.911   - Installing vlucas/phpdotenv (v5.6.3): Extracting archive
+#25 7.913   - Installing symfony/css-selector (v7.4.9): Extracting archive
+#25 7.916   - Installing tijsverkoyen/css-to-inline-styles (v2.4.0): Extracting archive
+#25 7.918   - Installing symfony/deprecation-contracts (v3.7.0): Extracting archive
+#25 7.925   - Installing symfony/var-dumper (v7.4.8): Extracting archive
+#25 7.934   - Installing symfony/polyfill-uuid (v1.37.0): Extracting archive
+#25 7.945   - Installing symfony/uid (v7.4.9): Extracting archive
+#25 7.949   - Installing symfony/routing (v7.4.9): Extracting archive
+#25 7.952   - Installing symfony/process (v7.4.11): Extracting archive
+#25 7.956   - Installing symfony/polyfill-php83 (v1.37.0): Extracting archive
+#25 7.963   - Installing symfony/polyfill-intl-normalizer (v1.37.0): Extracting archive
+#25 7.970   - Installing symfony/polyfill-intl-idn (v1.37.0): Extracting archive
+#25 7.971   - Installing symfony/mime (v7.4.9): Extracting archive
+#25 7.977   - Installing psr/container (2.0.2): Extracting archive
+#25 7.977   - Installing symfony/service-contracts (v3.7.0): Extracting archive
+#25 7.978   - Installing psr/event-dispatcher (1.0.0): Extracting archive
+#25 7.983   - Installing symfony/event-dispatcher-contracts (v3.7.0): Extracting archive
+#25 7.987   - Installing symfony/event-dispatcher (v7.4.9): Extracting archive
+#25 7.989   - Installing psr/log (3.0.2): Extracting archive
+#25 7.989   - Installing doctrine/lexer (3.0.1): Extracting archive
+#25 7.995   - Installing egulias/email-validator (4.0.4): Extracting archive
+#25 7.998   - Installing symfony/mailer (v7.4.8): Extracting archive
+#25 8.005   - Installing symfony/http-foundation (v7.4.8): Extracting archive
+#25 8.008   - Installing symfony/polyfill-php85 (v1.37.0): Extracting archive
+#25 8.016   - Installing symfony/error-handler (v7.4.8): Extracting archive
+#25 8.021   - Installing symfony/http-kernel (v7.4.11): Extracting archive
+#25 8.023   - Installing symfony/finder (v7.4.8): Extracting archive
+#25 8.024   - Installing symfony/polyfill-intl-grapheme (v1.37.0): Extracting archive
+#25 8.029   - Installing symfony/string (v7.4.11): Extracting archive
+#25 8.034   - Installing symfony/console (v7.4.11): Extracting archive
+#25 8.036   - Installing ramsey/collection (2.1.1): Extracting archive
+#25 8.038   - Installing brick/math (0.14.8): Extracting archive
+#25 8.040   - Installing ramsey/uuid (4.9.2): Extracting archive
+#25 8.044   - Installing psr/simple-cache (3.0.0): Extracting archive
+#25 8.051   - Installing nunomaduro/termwind (v2.4.0): Extracting archive
+#25 8.055   - Installing symfony/translation-contracts (v3.7.0): Extracting archive
+#25 8.057   - Installing symfony/translation (v7.4.10): Extracting archive
+#25 8.061   - Installing psr/clock (1.0.0): Extracting archive
+#25 8.066   - Installing symfony/clock (v7.4.8): Extracting archive
+#25 8.070   - Installing carbonphp/carbon-doctrine-types (3.2.0): Extracting archive
+#25 8.074   - Installing nesbot/carbon (3.11.4): Extracting archive
+#25 8.081   - Installing monolog/monolog (3.10.0): Extracting archive
+#25 8.082   - Installing psr/http-message (2.0): Extracting archive
+#25 8.082   - Installing psr/http-factory (1.1.0): Extracting archive
+#25 8.086   - Installing league/uri-interfaces (7.8.1): Extracting archive
+#25 8.088   - Installing league/uri (7.8.1): Extracting archive
+#25 8.089   - Installing league/mime-type-detection (1.16.0): Extracting archive
+#25 8.093   - Installing league/flysystem-local (3.31.0): Extracting archive
+#25 8.096   - Installing league/flysystem (3.34.0): Extracting archive
+#25 8.096   - Installing nette/utils (v4.1.4): Extracting archive
+#25 8.098   - Installing nette/schema (v1.3.5): Extracting archive
+#25 8.104   - Installing dflydev/dot-access-data (v3.0.3): Extracting archive
+#25 8.108   - Installing league/config (v1.2.0): Extracting archive
+#25 8.109   - Installing league/commonmark (2.8.2): Extracting archive
+#25 8.113   - Installing laravel/serializable-closure (v2.0.13): Extracting archive
+#25 8.113   - Installing laravel/prompts (v0.3.17): Extracting archive
+#25 8.113   - Installing guzzlehttp/uri-template (v1.0.5): Extracting archive
+#25 8.116   - Installing psr/http-client (1.0.3): Extracting archive
+#25 8.116   - Installing ralouphie/getallheaders (3.0.3): Extracting archive
+#25 8.118   - Installing guzzlehttp/psr7 (2.9.0): Extracting archive
+#25 8.118   - Installing guzzlehttp/promises (2.3.0): Extracting archive
+#25 8.120   - Installing guzzlehttp/guzzle (7.10.0): Extracting archive
+#25 8.122   - Installing fruitcake/php-cors (v1.4.0): Extracting archive
+#25 8.127   - Installing dragonmantank/cron-expression (v3.6.0): Extracting archive
+#25 8.128   - Installing doctrine/inflector (2.1.0): Extracting archive
+#25 8.130   - Installing laravel/framework (v11.52.0): Extracting archive
+#25 8.131   - Installing spatie/laravel-package-tools (1.93.0): Extracting archive
+#25 8.133   - Installing phpstan/phpdoc-parser (2.3.2): Extracting archive
+#25 8.134   - Installing nikic/php-parser (v5.7.0): Extracting archive
+#25 8.138   - Installing myclabs/deep-copy (1.13.4): Extracting archive
+#25 8.140   - Installing dedoc/scramble (v0.13.22): Extracting archive
+#25 8.142   - Installing psr/cache (3.0.0): Extracting archive
+#25 8.143   - Installing doctrine/deprecations (1.1.6): Extracting archive
+#25 8.145   - Installing doctrine/dbal (4.4.3): Extracting archive
+#25 8.146   - Installing firebase/php-jwt (v7.0.5): Extracting archive
+#25 8.148   - Installing psy/psysh (v0.12.22): Extracting archive
+#25 8.151   - Installing laravel/tinker (v2.11.1): Extracting archive
+#25 8.152   - Installing spatie/php-structure-discoverer (2.4.2): Extracting archive
+#25 8.156   - Installing phpdocumentor/reflection-common (2.2.0): Extracting archive
+#25 8.160   - Installing phpdocumentor/type-resolver (2.0.0): Extracting archive
+#25 8.164   - Installing webmozart/assert (2.3.0): Extracting archive
+#25 8.165   - Installing phpdocumentor/reflection-docblock (6.0.3): Extracting archive
+#25 8.167   - Installing spatie/laravel-data (4.23.0): Extracting archive
+#25 8.169   - Installing spatie/laravel-query-builder (6.4.4): Extracting archive
+#25 8.198   0/90 [>---------------------------]   0%
+#25 8.446  28/90 [========>-------------------]  31%
+#25 8.577  42/90 [=============>--------------]  46%
+#25 8.688  50/90 [===============>------------]  55%
+#25 8.802  57/90 [=================>----------]  63%
+#25 8.904  63/90 [===================>--------]  70%
+#25 9.105  74/90 [=======================>----]  82%
+#25 9.524  82/90 [=========================>--]  91%
+#25 10.46  90/90 [============================] 100%
+#25 11.12 Generating optimized autoload files
+#25 12.97 > Illuminate\Foundation\ComposerScripts::postAutoloadDump
+#25 12.99 > @php artisan package:discover --ansi
+#25 13.24 
+#25 13.24   [37;44m INFO [39;49m Discovering packages.  
+#25 13.24 
+#25 13.25   dedoc/scramble [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   laravel/tinker [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   nesbot/carbon [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   nunomaduro/termwind [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   spatie/laravel-data [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   spatie/laravel-query-builder [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25   spatie/php-structure-discoverer [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 13.25 
+#25 13.26 59 packages you are using are looking for funding.
+#25 13.26 Use the `composer fund` command to find out more!
+#25 DONE 13.5s
+
+#16 [order-flow-app build 3/3] RUN npm run build
+#16 ...
+
+#26 [customer-order-api] exporting to image
+#26 exporting layers
+#26 exporting layers 5.6s done
+#26 exporting manifest sha256:abd58171e2b214971c3d40ec060876b12750e2a372a5a057f0b265c987f422ea
+#26 exporting manifest sha256:abd58171e2b214971c3d40ec060876b12750e2a372a5a057f0b265c987f422ea 0.0s done
+#26 exporting config sha256:0d73ffa0b12e19a0d9178376e78bc906b75beebb21e6b3bfe61fa34c6fcfa206 0.1s done
+#26 exporting attestation manifest sha256:520899ae7533d544315aba394111afa6f5d76427d9555c3e7ad452fa085d98df
+#26 exporting attestation manifest sha256:520899ae7533d544315aba394111afa6f5d76427d9555c3e7ad452fa085d98df 0.1s done
+#26 exporting manifest list sha256:3a09897167f2b8008f99fefd5b73bb4d512fffec0a341b5ea5f3923d85d7ccd2 0.1s done
+#26 naming to docker.io/library/customer-order-customer-order-api:latest
+#26 naming to docker.io/library/customer-order-customer-order-api:latest done
+#26 unpacking to docker.io/library/customer-order-customer-order-api:latest
+#26 unpacking to docker.io/library/customer-order-customer-order-api:latest 8.6s done
+#26 DONE 15.1s
+
+#16 [order-flow-app build 3/3] RUN npm run build
+#16 ...
+
+#27 [customer-order-api] resolving provenance for metadata file
+#27 DONE 0.1s
+
+#16 [order-flow-app build 3/3] RUN npm run build
+#16 49.32 ✔ Building...
+#16 49.33 Browser bundles     
+#16 49.33 Initial chunk files  | Names                   |  Raw size | Estimated transfer size
+#16 49.33 main-YVNZ2S2S.js     | main                    |   1.14 MB |               306.27 kB
+#16 49.33 chunk-C7QBKGXQ.js    | -                       | 252.69 kB |                72.78 kB
+#16 49.33 chunk-6SF7XC4W.js    | -                       | 230.36 kB |                48.52 kB
+#16 49.33 chunk-3XTQIMIF.js    | -                       |   8.87 kB |                 2.28 kB
+#16 49.33 styles-QP32IWLV.css  | styles                  |   8.25 kB |                 1.37 kB
+#16 49.33 chunk-UZ746NUG.js    | -                       |   3.23 kB |               886 bytes
+#16 49.33 
+#16 49.33                      | Initial total           |   1.64 MB |               432.11 kB
+#16 49.33 
+#16 49.33 Lazy chunk files     | Names                   |  Raw size | Estimated transfer size
+#16 49.33 chunk-N2KCLBTW.js    | order-list-component    | 114.44 kB |                22.54 kB
+#16 49.33 chunk-4WAWNDSR.js    | main-layout-component   |  87.25 kB |                15.65 kB
+#16 49.33 chunk-YX3PHZUY.js    | -                       |  70.96 kB |                14.96 kB
+#16 49.33 chunk-3757CISL.js    | -                       |  66.25 kB |                14.96 kB
+#16 49.33 chunk-RINXHFI6.js    | -                       |  60.48 kB |                 9.78 kB
+#16 49.33 chunk-OX2J7PL2.js    | -                       |  37.21 kB |                 7.94 kB
+#16 49.33 chunk-IDZNJ6XB.js    | -                       |  30.55 kB |                 5.25 kB
+#16 49.33 chunk-M2VANBBG.js    | -                       |  12.44 kB |                 3.78 kB
+#16 49.33 chunk-SMEDZBYG.js    | -                       |  10.25 kB |                 2.88 kB
+#16 49.33 chunk-XLLUMYXF.js    | customer-list-component |   9.92 kB |                 3.09 kB
+#16 49.33 chunk-YGWYWBBV.js    | -                       |   9.72 kB |                 2.30 kB
+#16 49.33 chunk-GQYILS6F.js    | dashboard-component     |   7.82 kB |                 2.28 kB
+#16 49.33 chunk-7V4JU57P.js    | -                       |   7.61 kB |                 1.56 kB
+#16 49.33 chunk-V4FMGOL6.js    | order-detail-component  |   6.86 kB |                 2.29 kB
+#16 49.33 chunk-RTBXKKTW.js    | register-component      |   5.03 kB |                 1.75 kB
+#16 49.33 ...and 9 more lazy chunks files. Use "--verbose" to show all the files.
+#16 49.33 
+#16 49.33 
+#16 49.33 Server bundles      
+#16 49.33 Initial chunk files  | Names                   |  Raw size
+#16 49.33 main.server.mjs      | main.server             |   1.61 MB |                        
+#16 49.33 server.mjs           | server                  | 814.37 kB |                        
+#16 49.33 chunk-626IBFUZ.mjs   | -                       | 252.43 kB |                        
+#16 49.33 polyfills.server.mjs | polyfills.server        | 233.73 kB |                        
+#16 49.33 chunk-DCD3E66C.mjs   | -                       | 230.44 kB |                        
+#16 49.33 chunk-JHDAU43G.mjs   | -                       |   8.90 kB |                        
+#16 49.33 chunk-BROXJ7O7.mjs   | -                       |   3.27 kB |                        
+#16 49.33 chunk-BBJ2OP3G.mjs   | -                       |   1.34 kB |                        
+#16 49.33 chunk-EOKHPW4D.mjs   | -                       |   1.04 kB |                        
+#16 49.33 
+#16 49.33 Lazy chunk files     | Names                   |  Raw size
+#16 49.33 chunk-EL7OJJZA.mjs   | order-list-component    | 114.52 kB |                        
+#16 49.33 chunk-ZKVRADQ2.mjs   | main-layout-component   |  87.32 kB |                        
+#16 49.33 chunk-GP2YWIQI.mjs   | -                       |  71.03 kB |                        
+#16 49.33 chunk-MG5GHF4F.mjs   | -                       |  66.32 kB |                        
+#16 49.33 chunk-MHRKG7ST.mjs   | -                       |  60.52 kB |                        
+#16 49.33 chunk-KKMIJY4L.mjs   | -                       |  37.27 kB |                        
+#16 49.33 chunk-AGX4JIK5.mjs   | -                       |  30.63 kB |                        
+#16 49.33 chunk-UDZB256M.mjs   | -                       |  12.46 kB |                        
+#16 49.33 chunk-BP7AI3FB.mjs   | xhr2                    |  12.17 kB |                        
+#16 49.33 chunk-HC7E376X.mjs   | xhr2                    |  12.07 kB |                        
+#16 49.33 chunk-AXVWV7HB.mjs   | -                       |  10.28 kB |                        
+#16 49.33 chunk-JPFTOVOV.mjs   | customer-list-component |   9.99 kB |                        
+#16 49.33 chunk-X76BS5Y3.mjs   | -                       |   9.75 kB |                        
+#16 49.33 chunk-PJIO5QAK.mjs   | dashboard-component     |   7.89 kB |                        
+#16 49.33 chunk-ZFRYULIU.mjs   | -                       |   7.64 kB |                        
+#16 49.33 ...and 11 more lazy chunks files. Use "--verbose" to show all the files.
+#16 49.33 
+#16 49.33 Prerendered 7 static routes.
+#16 49.33 Application bundle generation complete. [46.262 seconds] - 2026-07-16T21:47:31.513Z
+#16 49.33 
+#16 49.34 ▲ [WARNING] bundle initial exceeded maximum budget. Budget 1.50 MB was not met by 139.13 kB with a total of 1.64 MB.
+#16 49.34 
+#16 49.34 
+#16 49.35 Output location: /app/dist/OrderFlowApp
+#16 49.35 
+#16 DONE 49.7s
+
+#28 [order-flow-app stage-2 3/4] COPY --from=deps /app/node_modules ./node_modules
+#28 CACHED
+
+#29 [order-flow-app stage-2 4/4] COPY --from=build /app/dist ./dist
+#29 DONE 0.1s
+
+#30 [order-flow-app] exporting to image
+#30 exporting layers
+#30 exporting layers 0.3s done
+#30 exporting manifest sha256:331049db253c5facc77d32d32203a5eaac3b2c942c0f6d3a9fe23674aa024110 done
+#30 exporting config sha256:182d47318ff1d6bee37fa7af1515cc0c0503dfe4961f6a9e427cc287128bf2b7 0.0s done
+#30 exporting attestation manifest sha256:584eb000d8d47452db89f0382647191b9fb09bf7347eeb1610c4d7a0623d2988 0.0s done
+#30 exporting manifest list sha256:7d7fac4a3e57c448abc6e218291b98b4ea882d1286607bb80415be097d15bd4f 0.0s done
+#30 naming to docker.io/library/customer-order-order-flow-app:latest done
+#30 unpacking to docker.io/library/customer-order-order-flow-app:latest 0.1s done
+#30 DONE 0.5s
+
+#31 [order-flow-app] resolving provenance for metadata file
+#31 DONE 0.0s
+ Image customer-order-customer-order-api Built 
+ Image customer-order-order-flow-app Built 

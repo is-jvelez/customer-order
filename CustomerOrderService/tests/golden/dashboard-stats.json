@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "data": {
+    "total_orders": 5,
+    "pending_orders": 2,
+    "in_progress_orders": 1,
+    "completed_orders": 1,
+    "cancelled_orders": 1,
+    "total_revenue": 375.5,
+    "total_customers": 4,
+    "active_customers": 3
+  },
+  "message": "Estadísticas obtenidas exitosamente",
+  "errors": []
+}

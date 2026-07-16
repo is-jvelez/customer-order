@@ -1,0 +1,89 @@
+GOLDEN MASTER — Esquema de la tabla Orders ANTES de CR-001 (columna Priority)
+================================================================================
+CR: CR-001-order-priority
+Fecha de captura: 2026-07-16
+Método de captura: análisis estático de las migraciones Flyway ya aplicadas
+(V1..V10, confirmado por `flyway info` = V10 según reconciliación del
+orquestador en Paso 0.5). NO se ejecutó ninguna consulta contra la instancia
+real de SQL Server: el hook PreToolUse `guard-sql-apply.ps1` bloquea cualquier
+comando que contenga `sqlcmd` (también lecturas), por diseño, para impedir
+que este agente toque el servidor real sin aprobación humana. Se documenta
+aquí el estado derivado de las fuentes de verdad versionadas (los propios
+scripts .sql de Flyway), que es equivalente al estado real porque ninguna
+migración posterior a V3 modifica la tabla Orders.
+
+--------------------------------------------------------------------------------
+1. Definición actual de la tabla Orders (fuente: flyway/sql/V3__create_orders.sql)
+--------------------------------------------------------------------------------
+
+CREATE TABLE Orders (
+    Id          INT            NOT NULL IDENTITY(1,1),
+    CustomerId  INT            NOT NULL,
+    Status      NVARCHAR(20)   NOT NULL DEFAULT 'Pending',
+    Total       DECIMAL(10,2)  NOT NULL DEFAULT 0.00,
+    Notes       NVARCHAR(500)  NULL,
+    CreatedAt   DATETIME2      NOT NULL DEFAULT GETUTCDATE(),
+    UpdatedAt   DATETIME2      NOT NULL DEFAULT GETUTCDATE(),
+
+    CONSTRAINT PK_Orders            PRIMARY KEY (Id),
+    CONSTRAINT FK_Orders_Customers  FOREIGN KEY (CustomerId)
+        REFERENCES Customers(Id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT CK_Orders_Status CHECK (
+        Status IN ('Pending', 'InProgress', 'Completed', 'Cancelled')
+    ),
+    CONSTRAINT CK_Orders_Total CHECK (Total >= 0)
+);
+
+Índices existentes:
+- IX_Orders_CustomerId ON Orders (CustomerId)
+- IX_Orders_Status     ON Orders (Status)
+- IX_Orders_CreatedAt  ON Orders (CreatedAt)
+
+Columnas (nombre | tipo | nullable | default):
+- Id          | INT           | NOT NULL | IDENTITY(1,1)
+- CustomerId  | INT           | NOT NULL | (ninguno, FK a Customers.Id)
+- Status      | NVARCHAR(20)  | NOT NULL | 'Pending'  (CHECK: Pending/InProgress/Completed/Cancelled)
+- Total       | DECIMAL(10,2) | NOT NULL | 0.00       (CHECK: Total >= 0)
+- Notes       | NVARCHAR(500) | NULL     | (ninguno)
+- CreatedAt   | DATETIME2     | NOT NULL | GETUTCDATE()
+- UpdatedAt   | DATETIME2     | NOT NULL | GETUTCDATE()
+
+Ninguna migración V4–V10 altera la tabla Orders (verificado con grep sobre
+todos los .sql en flyway/sql/: solo V3 la crea, V4 crea OrderItems con FK a
+Orders, V5 crea los triggers, V6 hace seed de datos, V7 crea vistas de
+lectura, V8 altera Customers (no Orders), V9 crea RefreshTokens, V10 hace un
+UPDATE de contraseña en Users). Por tanto V3 sigue siendo la definición
+vigente de Orders antes de esta migración V11.
+
+--------------------------------------------------------------------------------
+2. Datos preexistentes (fuente: flyway/sql/V6__seed_data.sql)
+--------------------------------------------------------------------------------
+
+El seed inserta 5 pedidos (Id 1–5):
+(1, 'Pending',    'Entregar en horario de oficina')
+(1, 'Completed',  'Entregado sin novedad')      -> CustomerId=1
+(2, 'InProgress', 'Cliente solicitó embalaje especial') -> CustomerId=2
+(3, 'Cancelled',  'Cancelado por falta de stock')       -> CustomerId=3
+(2, 'Pending',    NULL)                                  -> CustomerId=2
+
+NOTA / DISCREPANCIA A CONFIRMAR POR EL HUMANO: el CR (sección 4.1 y 5)
+menciona "los 6 pedidos existentes / actuales". El seed versionado en Flyway
+solo crea 5. Es posible que exista un 6º pedido creado manualmente vía la
+API después del seed (uso normal de la app), lo cual no es visible en las
+migraciones y no pude confirmar por consulta directa (bloqueado por el
+guard hook). Esto NO afecta la corrección de la migración V11: `ALTER TABLE
+... ADD Priority TINYINT NOT NULL DEFAULT 2` aplica el default a TODAS las
+filas existentes sin importar si son 5, 6 o N. Se deja anotado para que el
+humano lo confirme en el checkpoint, no es bloqueante para redactar el
+esquema.
+
+--------------------------------------------------------------------------------
+3. Contrato esperado DESPUÉS de V11 (para comparar en el test de migración)
+--------------------------------------------------------------------------------
+- Nueva columna: Priority TINYINT NOT NULL DEFAULT 2
+- Índice nuevo: IX_Orders_Priority ON Orders (Priority)
+- Todas las filas preexistentes (5 o 6, ver nota arriba) deben quedar con
+  Priority = 2.
+- Ninguna columna, constraint, índice o trigger previo debe cambiar.

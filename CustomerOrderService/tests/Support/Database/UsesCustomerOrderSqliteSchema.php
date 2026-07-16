@@ -52,6 +52,7 @@ trait UsesCustomerOrderSqliteSchema
             $table->string('Notes', 500)->nullable();
             $table->dateTime('CreatedAt')->nullable();
             $table->dateTime('UpdatedAt')->nullable();
+            $table->unsignedTinyInteger('Priority')->default(2);
         });
 
         Schema::create('OrderItems', function (Blueprint $table): void {

@@ -1,0 +1,76 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+[1mInitial chunk files[22m                                                      [2m | [22m[1mNames[22m                                                                 [2m | [22m [1mRaw size[22m
+[32mspec-app-features-orders-ui-pages-list-order-list.component.js[39m           [2m | [22m[2mspec-app-features-orders-ui-pages-list-order-list.component[22m           [2m | [22m [36m41.67 kB[39m[2m | [22m
+[32mspec-app-features-orders-ui-pages-detail-order-detail.component.js[39m       [2m | [22m[2mspec-app-features-orders-ui-pages-detail-order-detail.component[22m       [2m | [22m [36m23.93 kB[39m[2m | [22m
+[32mchunk-KEW6YKVH.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m [36m22.43 kB[39m[2m | [22m
+[32mspec-app-app.js[39m                                                          [2m | [22m[2mspec-app-app[22m                                                          [2m | [22m  [36m9.92 kB[39m[2m | [22m
+[32mstyles.css[39m                                                               [2m | [22m[2mstyles[22m                                                                [2m | [22m  [36m8.98 kB[39m[2m | [22m
+[32mchunk-GBHDGBAR.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m8.03 kB[39m[2m | [22m
+[32mchunk-5VGBL2YG.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m7.93 kB[39m[2m | [22m
+[32mchunk-RSTWSNOR.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m4.75 kB[39m[2m | [22m
+[32mchunk-NV355JPP.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m3.72 kB[39m[2m | [22m
+[32mspec-app-features-orders-infrastructure-order.repository.js[39m              [2m | [22m[2mspec-app-features-orders-infrastructure-order.repository[22m              [2m | [22m  [36m3.17 kB[39m[2m | [22m
+[32mspec-app-features-orders-ui-components-order-form-order-form.component.js[39m[2m | [22m[2mspec-app-features-orders-ui-components-order-form-order-form.component[22m[2m | [22m  [36m1.99 kB[39m[2m | [22m
+[32mchunk-J7XH5IYX.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m1.40 kB[39m[2m | [22m
+[32mchunk-NHZHCAP4.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m  [36m1.28 kB[39m[2m | [22m
+[32minit-testbed.js[39m                                                          [2m | [22m[2minit-testbed[22m                                                          [2m | [22m  [36m1.21 kB[39m[2m | [22m
+[32mspec-app-shared-pipes-priority-label.pipe.js[39m                             [2m | [22m[2mspec-app-shared-pipes-priority-label.pipe[22m                             [2m | [22m  [36m1.02 kB[39m[2m | [22m
+[32mchunk-PT65SCMG.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m[36m970 bytes[39m[2m | [22m
+[32mvitest-mock-patch.js[39m                                                     [2m | [22m[2mvitest-mock-patch[22m                                                     [2m | [22m[36m969 bytes[39m[2m | [22m
+[32mchunk-AF2V6CYH.js[39m                                                        [2m | [22m[2m-[22m                                                                     [2m | [22m[36m693 bytes[39m[2m | [22m
+
+[1m [22m                                                                        [2m | [22m[1mInitial total[22m                                                         [2m | [22m[1m144.05 kB[22m
+
+Application bundle generation complete. [4.935 seconds] - 2026-07-16T20:17:38.970Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mUnable to initialize JavaScript cache storage.[0m [1m[35m[plugin angular-compiler][0m
+
+  Cannot find module 'lmdb'
+  This will not affect the build output content but may result in slower builds.
+
+[39m[22m
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mC:/Users/desarrollo.28/OneDrive - Grupo Torres & Torres/Desktop/IS/IA/Pruebas/customer-order/is-order-flow-app[39m
+
+ [31m❯[39m [30m[45m OrderFlowApp [49m[39m src/app/app.spec.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 139[2mms[22m[39m
+[31m     [31m×[31m should render title[39m[32m 35[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m [30m[45m OrderFlowApp [49m[39m src/app/app.spec.ts[2m > [22mApp[2m > [22mshould render title
+[31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
+[36m [2m❯[22m src/app/app.spec.ts:[2m21:55[22m[39m
+    [90m 19|[39m     [35mawait[39m fixture[33m.[39m[34mwhenStable[39m()[33m;[39m
+    [90m 20|[39m     [35mconst[39m compiled [33m=[39m fixture[33m.[39mnativeElement [35mas[39m [33mHTMLElement[39m[33m;[39m
+    [90m 21|[39m     expect(compiled.querySelector('h1')?.textContent).toContain('Hello…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 22|[39m   })[33m;[39m
+    [90m 23|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: NG04002: Cannot match any routes. URL Segment: 'auth/login'[39m
+[90m [2m❯[22m Recognizer.noMatchError ../../../../../../../OneDrive%20-%20Grupo%20Torres%20&%20Torres/Desktop/IS/IA/Pruebas/customer-order/is-order-flow-app/node_modules/@angular/router/fesm2022/_router-chunk.mjs:[2m2923:12[22m[39m
+[90m [2m❯[22m Recognizer.match ../../../../../../../OneDrive%20-%20Grupo%20Torres%20&%20Torres/Desktop/IS/IA/Pruebas/customer-order/is-order-flow-app/node_modules/@angular/router/fesm2022/_router-chunk.mjs:[2m2957:20[22m[39m
+[90m [2m❯[22m Recognizer.recognize ../../../../../../../OneDrive%20-%20Grupo%20Torres%20&%20Torres/Desktop/IS/IA/Pruebas/customer-order/is-order-flow-app/node_modules/@angular/router/fesm2022/_router-chunk.mjs:[2m2930:9[22m[39m
+[90m [2m❯[22m ../../../../../../../OneDrive%20-%20Grupo%20Torres%20&%20Torres/Desktop/IS/IA/Pruebas/customer-order/is-order-flow-app/node_modules/@angular/router/fesm2022/_router-chunk.mjs:[2m3187:9[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 4002 }[39m
+[31mThis error originated in "[1msrc/app/app.spec.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
+[2m     Errors [22m [1m[31m1 error[39m[22m
+[2m   Start at [22m 15:17:40
+[2m   Duration [22m 7.98s[2m (transform 996ms, setup 7.98s, import 5.17s, tests 2.83s, environment 19.14s)[22m
+

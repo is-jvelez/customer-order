@@ -31,6 +31,7 @@ class OrderResource extends JsonResource
                 ],
                 $order->items,
             ),
+            'priority'    => $order->priority->value,
         ];
     }
 }

@@ -1,0 +1,29 @@
+Re-corrida independiente de la suite PHPUnit — testing-agent (CR-001-order-priority)
+================================================================================
+Fecha: 2026-07-16
+Comando (contenedor efimero, misma imagen que uso laravel-agent, con bind-mount
+de codigo y el volumen con nombre customer-order-vendor-cache para vendor/,
+ya que no existe el sidecar customer-order-test en docker-compose.yml):
+
+docker run --rm \
+  -v "<repo>/CustomerOrderService:/var/www/html" \
+  -v customer-order-vendor-cache:/var/www/html/vendor \
+  -e APP_KEY="base64:pHKSLXmq2hmAkvlE37e2c0K567hWOefEnmI7swCH9io=" \
+  -e JWT_SECRET="MySuperSecretKeyForDevelopmentOnly2026!AuthService" \
+  -e JWT_ISSUER="AuthService" \
+  -e JWT_AUDIENCE="OrderFlowApp" \
+  -w /var/www/html \
+  customer-order-customer-order-api \
+  sh -c "composer install --no-interaction && vendor/bin/phpunit"
+
+Resultado:
+PHPUnit 10.5.63 by Sebastian Bergmann and contributors.
+Runtime:       PHP 8.3.32
+Configuration: /var/www/html/phpunit.xml
+...............................................................  63 / 101 ( 62%)
+......................................                          101 / 101 (100%)
+Time: 00:13.582, Memory: 42.50 MB
+OK (101 tests, 312 assertions)
+
+CONCLUSION: coincide exactamente con lo reportado por laravel-agent en
+phpunit-run-output.txt (101 tests, 312 assertions, OK). Sin discrepancias.

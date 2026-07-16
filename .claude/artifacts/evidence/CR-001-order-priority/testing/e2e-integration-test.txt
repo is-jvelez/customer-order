@@ -1,0 +1,91 @@
+Prueba de integracion end-to-end — testing-agent (CR-001-order-priority)
+================================================================================
+Fecha: 2026-07-16
+
+LIMITACION CONOCIDA (documentada, no forzada): el contenedor real
+`customer-order-api` (imagen `customer-order-customer-order-api`, sin
+bind-mount, codigo copiado al build) TODAVIA sirve el codigo previo al CR
+-- confirmado empiricamente: GET /api/orders contra el contenedor real
+(puerto 8000) NO devuelve el campo `priority` en el JSON. Esto es esperado:
+la etapa Deploy (que reconstruye la imagen) todavia no ha corrido. Por lo
+tanto:
+- La verificacion visual del badge en el navegador real (Angular contra el
+  Laravel real) queda pendiente para la etapa Deploy.
+- En su lugar, se valido la cadena Laravel -> SQL con el CODIGO NUEVO real,
+  usando un contenedor efimero con bind-mount (mismo mecanismo que
+  laravel-agent uso para PHPUnit), sirviendo `php artisan serve` conectado a
+  la BD real (sqlserver, red customer-order_default), autenticado con un
+  JWT real emitido por AuthService (admin@demo.com).
+
+Comando de arranque del contenedor efimero:
+docker run -d --rm --name customer-order-testing-ephemeral \
+  --network customer-order_default \
+  -v "<repo>/CustomerOrderService:/var/www/html" \
+  -v customer-order-vendor-cache:/var/www/html/vendor \
+  -e APP_KEY=... -e JWT_SECRET=... -e JWT_ISSUER=AuthService -e JWT_AUDIENCE=OrderFlowApp \
+  -e DB_CONNECTION=sqlsrv -e DB_HOST=sqlserver -e DB_PORT=1433 \
+  -e DB_DATABASE=CustomerOrdersDB -e DB_USERNAME=sa -e DB_PASSWORD=*** \
+  -e DB_ENCRYPT=yes -e DB_TRUST_SERVER_CERTIFICATE=true \
+  -p 8099:8000 -w /var/www/html \
+  customer-order-customer-order-api \
+  sh -c "php artisan serve --host=0.0.0.0 --port=8000"
+
+--------------------------------------------------------------------------------
+1) Autenticacion (AuthService real, puerto 5000): login admin@demo.com ->
+   accessToken JWT obtenido correctamente.
+
+2) POST /api/orders con priority=3 (crear pedido con prioridad Alta):
+   Request:  {customer_id:1, notes:"E2E test CR-001 - prioridad alta",
+              priority:3, items:[{description:"Item de prueba E2E",
+              quantity:1, unit_price:10.00}]}
+   Response: HTTP 200, "priority":3, id=9, total=10 (calculado por el
+             trigger TR_OrderItems_RecalcTotal, no por Laravel).
+
+3) Verificacion directa en SQL Server (bypass de Laravel, prueba que el
+   dato llego a la columna Priority real, no solo al JSON):
+   SELECT Id, Priority FROM Orders WHERE Id = 9;
+   -> Id=9, Priority=3 (TINYINT). CONFIRMADO: "llega a SQL como 3".
+
+4) GET /api/orders?priority=3 (filtrar por Alta):
+   -> devuelve exactamente 1 item, id=9, priority=3. pagination.total=1.
+   CONFIRMADO: el filtro devuelve solo el pedido de prioridad Alta.
+
+5) GET /api/orders?priority=1 (control negativo, ninguna Baja existe):
+   -> items=[], pagination.total=0. Confirma que el filtro no trae falsos
+   positivos.
+
+6) GET /api/orders?per_page=100 (sin filtro, comportamiento previo intacto):
+   -> 6 items (5 preexistentes con priority=2 + el nuevo id=9 con
+   priority=3). pagination.total=6. Confirma que el filtro es opcional y
+   que omitirlo devuelve todos.
+
+7) POST /api/orders SIN priority (debe persistir 2 por default):
+   -> HTTP 200, "priority":2, id=10. CONFIRMADO: default correcto.
+
+8) POST /api/orders con priority invalido:
+   - priority=0    -> HTTP 422, "La prioridad debe ser 1 (Baja), 2 (Media)
+                       o 3 (Alta)."
+   - priority=4    -> HTTP 422, mismo mensaje.
+   - priority="x"  -> HTTP 422, "La prioridad debe ser un numero entero." +
+                       el mensaje de rango.
+   CONFIRMADO: validacion de valores invalidos funciona end-to-end contra
+   la BD real (no solo en tests unitarios/sqlite).
+
+--------------------------------------------------------------------------------
+LIMPIEZA: los pedidos de prueba (Id 9 y 10) fueron eliminados via
+DELETE /api/orders/{id} tras la verificacion (HTTP 200 ambos). Conteo de
+Orders confirmado de vuelta a 5 (el estado original de la BD para el resto
+del pipeline). El contenedor efimero fue detenido (`docker stop`).
+
+--------------------------------------------------------------------------------
+PENDIENTE PARA LA ETAPA DEPLOY (no cubierto aqui, requiere rebuild real):
+- Verificacion visual del badge rojo en la lista del frontend Angular real
+  (contenedor `order-flow-app`) contra el Laravel real reconstruido.
+- Verificacion de que el contenedor real `customer-order-api` (no el
+  efimero) sirve `priority` tras el rebuild de la imagen.
+
+CONCLUSION: la cadena completa Laravel -> SQL para el contrato de prioridad
+(crear con Alta, persistencia real como 3, filtro por Alta, default 2,
+validacion de invalidos) queda demostrada de punta a punta contra la BD
+real con el codigo nuevo. Sin discrepancias respecto al contrato del CR
+(seccion 3) ni respecto a lo reportado por laravel-agent.

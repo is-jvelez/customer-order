@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Mappers;
 use App\Domain\Orders\Entities\Order;
 use App\Domain\Orders\Entities\OrderItem;
 use App\Domain\Orders\ValueObjects\OrderStatus;
+use App\Enums\OrderPriority;
 use App\Infrastructure\Persistence\Models\OrderItemModel;
 use App\Infrastructure\Persistence\Models\OrderModel;
 
@@ -25,6 +26,7 @@ class OrderMapper
             createdAt:  $model->CreatedAt,
             updatedAt:  $model->UpdatedAt,
             items:      $items,
+            priority:   $model->Priority ?? OrderPriority::Medium,
         );
     }
 

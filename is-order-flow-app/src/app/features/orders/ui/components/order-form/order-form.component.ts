@@ -11,6 +11,8 @@ import { Customer } from '../../../../customers/domain/models/customer.model';
 import { OrderService } from '../../../application/services/order.service';
 import { OrderItemsFormComponent } from '../order-items-form/order-items-form.component';
 import { NotificationService } from '../../../../../shared/services/notification.service';
+import { ORDER_PRIORITIES, OrderPriority } from '../../../../../shared/constants/app.constants';
+import { PriorityLabelPipe } from '../../../../../shared/pipes/priority-label.pipe';
 
 @Component({
   selector: 'app-order-form',
@@ -23,6 +25,7 @@ import { NotificationService } from '../../../../../shared/services/notification
     MatDialogModule,
     MatProgressSpinnerModule,
     OrderItemsFormComponent,
+    PriorityLabelPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -44,6 +47,15 @@ import { NotificationService } from '../../../../../shared/services/notification
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Notas (opcional)</mat-label>
           <textarea matInput formControlName="notes" rows="2"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prioridad</mat-label>
+          <mat-select formControlName="priority">
+            @for (p of priorities; track p) {
+              <mat-option [value]="p">{{ p | priorityLabel }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
       </form>
 
@@ -74,10 +86,12 @@ export class OrderFormComponent implements OnInit {
 
   protected readonly saving = signal(false);
   protected readonly customers = signal<Customer[]>([]);
+  protected readonly priorities = ORDER_PRIORITIES;
 
   protected readonly form = this.fb.group({
     customerId: [null as number | null, Validators.required],
     notes: [''],
+    priority: [OrderPriority.Medium as OrderPriority, Validators.required],
   });
 
   ngOnInit(): void {
@@ -100,6 +114,7 @@ export class OrderFormComponent implements OnInit {
     this.orderService.create({
       customerId: this.form.value.customerId!,
       notes: this.form.value.notes || null,
+      priority: this.form.value.priority ?? OrderPriority.Medium,
       items: this.itemsFormRef.getItems(),
     }).subscribe({
       next: (res) => {

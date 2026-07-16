@@ -104,6 +104,104 @@ class OrderControllerTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
+    /** @dataProvider invalidPriorityProvider */
+    public function test_Store_ShouldReturn422_WhenPriorityIsInvalid(mixed $invalidPriority): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('create');
+        });
+
+        $response = $this->postJson('/api/orders', [
+            'customer_id' => 1,
+            'priority' => $invalidPriority,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ], $this->apiHeaders());
+
+        $response->assertStatus(422)
+            ->assertJsonPath('success', false);
+    }
+
+    public static function invalidPriorityProvider(): array
+    {
+        return [
+            'zero' => [0],
+            'four' => [4],
+            'nine' => [9],
+            'non_numeric' => ['x'],
+        ];
+    }
+
+    public function test_Store_ShouldPersistDefaultPriority_WhenPriorityIsOmitted(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('create')
+                ->once()
+                ->withArgs(fn(\App\Application\Orders\DTOs\CreateOrderDTO $dto): bool =>
+                    $dto->priority === \App\Enums\OrderPriority::Medium)
+                ->andReturn($this->makeOrder(11, OrderStatus::Pending));
+        });
+
+        $response = $this->postJson('/api/orders', [
+            'customer_id' => 1,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ], $this->apiHeaders());
+
+        $response->assertStatus(201)->assertJsonPath('success', true);
+    }
+
+    public function test_Store_ShouldPersistExplicitPriority_WhenPriorityIsThree(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('create')
+                ->once()
+                ->withArgs(fn(\App\Application\Orders\DTOs\CreateOrderDTO $dto): bool =>
+                    $dto->priority === \App\Enums\OrderPriority::High)
+                ->andReturn($this->makeOrder(12, OrderStatus::Pending));
+        });
+
+        $response = $this->postJson('/api/orders', [
+            'customer_id' => 1,
+            'priority' => 3,
+            'items' => [
+                ['description' => 'Keyboard', 'quantity' => 1, 'unit_price' => 45.5],
+            ],
+        ], $this->apiHeaders());
+
+        $response->assertStatus(201)->assertJsonPath('success', true);
+    }
+
+    public function test_Index_ShouldPassPriorityFilter_WhenQueryParamIsProvided(): void
+    {
+        $this->authenticateWithJwt();
+        $this->mock(IOrderService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getAll')
+                ->once()
+                ->withArgs(fn(array $filters): bool => ($filters['priority'] ?? null) === '3')
+                ->andReturn([
+                    'items' => [$this->makeOrder(1, OrderStatus::Pending)],
+                    'pagination' => [
+                        'total' => 1,
+                        'per_page' => 15,
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'from' => 1,
+                        'to' => 1,
+                    ],
+                ]);
+        });
+
+        $response = $this->getJson('/api/orders?priority=3', $this->apiHeaders());
+
+        $response->assertStatus(200)->assertJsonPath('success', true);
+    }
+
     public function test_Complete_ShouldReturn409_WhenStatusTransitionIsInvalid(): void
     {
         $this->authenticateWithJwt();

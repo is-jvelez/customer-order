@@ -1,0 +1,14 @@
+=== GET /api/orders?priority=3 (esperado: 0 items, ninguno preexistente es Alta) ===
+{"success":true,"data":{"items":[],"pagination":{"total":0,"per_page":15,"current_page":1,"last_page":1,"from":null,"to":null}},"message":"Pedidos obtenidos exitosamente","errors":[]}
+
+=== POST /api/orders con priority=3 (crear pedido temporal para probar filtro positivo) ===
+{"success":true,"data":{"id":11,"customer_id":1,"status":"Pending","total":5,"notes":"Deploy-agent verificacion post-rebuild CR-001","created_at":"2026-07-16 21:54:32.8000000","updated_at":"2026-07-16 21:54:32.8133333","items":[{"id":11,"description":"Item verificacion deploy","quantity":1,"unit_price":5}],"priority":3},"message":"Pedido creado exitosamente","errors":[]}
+
+=== GET /api/orders?priority=3 (esperado: 1 item, el nuevo id=11) ===
+{"success":true,"data":{"items":[{"id":11,"customer_id":1,"status":"Pending","total":5,"notes":"Deploy-agent verificacion post-rebuild CR-001","created_at":"2026-07-16 21:54:32.8000000","updated_at":"2026-07-16 21:54:32.8133333","items":[{"id":11,"description":"Item verificacion deploy","quantity":1,"unit_price":5}],"priority":3}],"pagination":{"total":1,"per_page":15,"current_page":1,"last_page":1,"from":1,"to":1}},"message":"Pedidos obtenidos exitosamente","errors":[]}
+
+=== DELETE /api/orders/11 (limpieza del pedido de prueba) ===
+HTTP_CODE=200
+
+=== Confirmacion de vuelta a 5 pedidos ===
+"total":5
