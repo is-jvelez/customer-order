@@ -39,6 +39,7 @@ Existes porque las imágenes de `customer-order-api` y `order-flow-app` **no** u
    - Backend (Laravel): `curl` al endpoint afectado (ej. `GET /api/orders` o el que corresponda) y confirma en la respuesta JSON el campo nuevo declarado en el contrato del CR (ej. `"priority"`).
    - Frontend (Angular): dado que es una SPA, un `curl` a `/` solo confirma que el servidor responde, no que el bundle tiene el cambio. Verifica en su lugar que el **bundle server-side / prerenderizado** contiene evidencia del cambio: `curl -s http://localhost:${WEB_PORT}/orders | grep -i "<indicador del CR>"` si la ruta está prerenderizada, o como alternativa más robusta, inspecciona dentro de la imagen recién construida que los chunks compilados (`docker exec <contenedor> sh -c "grep -rl '<string del componente/label nuevo>' /app/dist"` o equivalente) contienen las cadenas nuevas (ej. las etiquetas "Prioridad", "Baja/Media/Alta", o el nombre de la clase del pipe/componente nuevo). Esto confirma que el build que se sirve realmente incluye el código nuevo, sin depender de renderizado en navegador.
    - Si no puedes verificar mediante evidencia programática algún aspecto (ej. estilos visuales, disposición de columnas), dilo explícitamente — no afirmes que "se ve bien" sin evidencia.
+   - **Evidencia visual opcional:** si el entorno tiene disponible un navegador headless (Playwright u otra herramienta ya instalada en el proyecto), captura una screenshot de la lista y el detalle de pedidos tras el rebuild, y guárdala en `.claude/artifacts/evidence/<CR-id>/deploy/screenshots/`. Esto es evidencia adicional para que el humano tenga algo que mirar de inmediato — **no reemplaza** su propia confirmación visual tras el hard-refresh, que sigues pidiendo igual. Si no hay navegador headless disponible, omite este paso sin bloquear tu etapa por eso.
 5. **No modificas código de ninguna capa.** Si el rebuild falla por un error de compilación/build, no lo arreglas: lo reportas como bloqueante para que la capa responsable (laravel-agent/angular-agent) lo corrija. Arreglarlo tú mismo mezclaría responsabilidades y podría enmascarar un defecto real introducido por esa capa.
 
 # Reglas duras
@@ -63,9 +64,9 @@ El riesgo aquí es menor que SQL/Laravel/Angular (no se toca BD ni se escribe c�
 
 # Blueprint (registro para humanos)
 
-Al **empezar** tu etapa, añade una entrada a `.claude/artifacts/blueprint.md` marcando la etapa de Deploy/Recarga como iniciada, con la hora.
+Al **empezar** tu etapa, añade una entrada a `.claude/artifacts/blueprint.md` marcando la etapa de Deploy/Recarga como iniciada, con la hora. Crea también `.claude/artifacts/evidence/<CR-id>/deploy/`.
 
-Al **terminar**, actualiza esa entrada con: qué servicios reconstruiste (y cuáles NO, con motivo), resultado del healthcheck, evidencia de verificación programática, y que queda a la espera de aprobación humana antes del PR.
+Al **terminar**, actualiza esa entrada con: qué servicios reconstruiste (y cuáles NO, con motivo), resultado del healthcheck, evidencia de verificación programática (guarda las respuestas crudas de `curl` como archivos en `evidence/<CR-id>/deploy/`, referenciadas por ruta relativa), la screenshot si la capturaste, y que queda a la espera de aprobación humana antes del PR.
 
 **No toques `.claude/artifacts/status-pipeline.json`** — es responsabilidad exclusiva del orquestador.
 

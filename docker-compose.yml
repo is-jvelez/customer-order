@@ -133,6 +133,27 @@ services:
       retries: 5
       start_period: 15s
 
+  # Sidecar de test para laravel-agent / testing-agent (R5 del post-mortem de
+  # CR-001): mismo Dockerfile que customer-order-api (PHP + extensiones + Composer
+  # ya listos), pero con el codigo montado por bind-mount (no copiado al build) y
+  # `vendor/` en un volumen con nombre, para que `composer install` no se repita
+  # desde cero en cada corrida de tests dentro del mismo CR. No sirve trafico real
+  # (no se expone puerto) y no arranca con `docker compose up -d` normal: solo con
+  # `docker compose --profile testing up -d customer-order-test`.
+  customer-order-test:
+    build:
+      context: ./CustomerOrderService
+      dockerfile: Dockerfile
+    container_name: customer-order-test
+    profiles: ["testing"]
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./CustomerOrderService:/var/www/html
+      - customer_order_vendor:/var/www/html/vendor
+    entrypoint: ["tail", "-f", "/dev/null"]
+
   order-flow-app:
     build:
       context: ./is-order-flow-app
@@ -162,3 +183,4 @@ services:
 
 volumes:
   sqlserver_data:
+  customer_order_vendor:

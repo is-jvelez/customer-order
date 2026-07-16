@@ -35,7 +35,9 @@
       "Bash(node scripts/validate_palette.js \"#00897B,#7A4FA0\" --mode light)",
       "Bash(node scripts/validate_palette.js \"#00897B,#7A4FA0\" --mode dark)",
       "Bash(node scripts/validate_palette.js \"#2FA695,#A57FD1\" --mode dark)",
-      "Artifact"
+      "Artifact",
+      "Bash(powershell -ExecutionPolicy Bypass -File ./.claude/scripts/guard-angular.ps1)",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }
