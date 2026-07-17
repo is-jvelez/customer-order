@@ -12,6 +12,9 @@ App de clientes y ordenes
     docker compose build
     docker compose up -d
 
+    docker-compose down -v
+    docker-compose up -d --build
+
 Verificar configuración (opcional):
 
     docker compose config
