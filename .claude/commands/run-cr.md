@@ -1,6 +1,6 @@
 ---
 description: "Orquesta el pipeline agéntico de un Change Request a través de las capas SQL, Laravel, Angular, Testing y Deploy (recarga del entorno local Docker), con checkpoints humanos entre etapas."
-argument-hint: [CR-id] (ej. CR-001)
+argument-hint: "[CR-id] (ej. CR-001)"
 disable-model-invocation: true
 ---
 
