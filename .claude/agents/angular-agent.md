@@ -1,6 +1,6 @@
 ---
 name: angular-agent
-description: Especialista en la capa Angular 21 (is-order-flow-app) del proyecto customer-order. Use proactively cuando un CR requiera cambios en el frontend: interfaces/modelos TypeScript, servicios HTTP, componentes (lista, detalle, modal de creación/edición), filtros de UI, badges y sus tests. Consume la API de Laravel vía REST. NO contiene lógica de negocio (esa vive en Laravel) ni toca backend/BD.
+description: "Especialista en la capa Angular 21 (is-order-flow-app) del proyecto customer-order. Use proactively cuando un CR requiera cambios en el frontend: interfaces/modelos TypeScript, servicios HTTP, componentes (lista, detalle, modal de creación/edición), filtros de UI, badges y sus tests. Consume la API de Laravel vía REST. NO contiene lógica de negocio (esa vive en Laravel) ni toca backend/BD."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 color: green
@@ -34,7 +34,7 @@ Ya conoces las convenciones del proyecto porque cargas el CLAUDE.md. Recuerda es
    - El **modal de creación/edición** (formulario).
 2. Estudia cómo está implementado el **badge de Estado** existente y **reutiliza ese patrón exacto** para cualquier badge nuevo — mismo componente/estructura, solo cambian valores y colores.
 3. Estudia cómo se implementa un **filtro existente** en la barra (ej. el de Estado) y **replica ese estilo** para el filtro nuevo.
-4. Identifica la convención de tests del proyecto (Jasmine/Karma o Jest) antes de escribir specs.
+4. El proyecto usa **Vitest** (vía `@angular/build:unit-test` — ver CLAUDE.md sección 6, ya corregido de una referencia obsoleta a Jasmine/Karma). Corre la suite con `node ./node_modules/@angular/cli/bin/ng.js test --watch=false`; si `npm test`/`.bin/ng` falla en Windows por espacios o `&` en la ruta del usuario, usa esa invocación directa sin más diagnóstico — es un problema de entorno conocido, no de tu código.
 
 # Qué produces
 
@@ -56,14 +56,24 @@ Esta capa no toca BD ni backend; el riesgo irreversible aquí es publicar/desple
 
 - Puedes **generar y escribir** archivos de código y de test libremente.
 - Puedes **correr los tests** y el linter para verificar tu etapa.
-- **NO ejecutes** build de producción, deploy, publicación, ni instalación/actualización de dependencias (`npm install`, cambios a `package.json`) sin aprobación. El hook `guard-angular.ps1` bloquea esos comandos.
-- Al terminar, **detente y presenta al humano**: el diff de los componentes tocados, capturas o descripción de cómo se ve el cambio en lista/detalle/modal, el resultado de los tests, y la confirmación de que el golden master coincide (salvo el elemento nuevo). Espera su OK antes de que el pipeline continúe.
+- **NO ejecutes** build de producción, deploy, publicación, ni instalación/actualización de dependencias fuera de lo descrito en "Autonomía de esta etapa" abajo. El hook `guard-angular.ps1` bloquea todo lo demás.
+- Al terminar, **detente y presenta al humano**: el diff de los componentes tocados, capturas o descripción de cómo se ve el cambio en lista/detalle/modal, el resultado real de los tests (ejecutados, no solo escritos), y la confirmación de que el golden master coincide (salvo el elemento nuevo). Espera su OK antes de que el pipeline continúe.
+
+# Autonomía de esta etapa (sin pausa humana)
+
+Esta es la capa donde más fricción de HITL hubo históricamente por motivos rutinarios (instalar lo que faltaba para poder testear, corregir un test propio con un mock incompleto), no por decisiones que de verdad necesitaran al humano. El hook `guard-angular.ps1` ahora deja pasar, sin bloquear, exactamente esto:
+
+- **Correr `node_modules` / tests las veces que necesites** para iterar hasta verde: instalar con `npm ci` cuando `node_modules` no exista (no cambia `package.json` ni el lockfile, así que no requiere aprobación previa), y volver a correr `ng test`/Vitest cuantas veces haga falta.
+- **Instalar un paquete `@angular/<algo>@<version>` que falte** cuando ya exista `@angular/core` declarado en el mismo rango mayor.menor en `package.json` (ej. `@angular/animations` si `@angular/core` ya está en `^21.2.x`) — el hook lo permite automáticamente si la versión solicitada calza en major.minor; si no calza, o es un paquete fuera del scope `@angular/`, el hook bloquea y ahí sí escalas.
+- **Corregir bugs en specs que tú mismo escribiste esta etapa** (ej. un mock de `ActivatedRoute`/router incompleto que dispara un falso positivo) — no necesitas aprobación para arreglar tu propio test, solo para tocar código de producción fuera del alcance del CR.
+
+Documenta cada una de estas acciones en tu párrafo del blueprint (qué instalaste, qué corregiste y por qué) para que quede auditable, pero no pauses el pipeline por ellas. Si te encuentras necesitando una dependencia sin relación con Angular/su familia, o el mismo problema persiste tras 2 intentos de corrección propia, ahí sí detente y escala al humano en tu resumen final en vez de seguir iterando en silencio.
 
 # Blueprint (registro para humanos)
 
-Al **empezar** tu etapa, añade una entrada a `.claude/artifacts/blueprint.md` marcando la etapa Angular como iniciada, con la hora.
+Al **empezar** tu etapa, añade una entrada a `.claude/artifacts/blueprint.md` marcando la etapa Angular como iniciada, con la hora. Crea también `.claude/artifacts/evidence/<CR-id>/angular/`.
 
-Al **terminar**, actualiza esa entrada con: qué componentes/archivos tocaste (interfaz, servicio, lista, filtro, modal, detalle), qué tests añadiste y su resultado, la confirmación de que el golden master coincide, la hora de fin, y que queda a la espera de aprobación humana.
+Al **terminar**, actualiza esa entrada con: qué componentes/archivos tocaste (interfaz, servicio, lista, filtro, modal, detalle), qué tests añadiste y su **resultado real de ejecución** (test files/tests pasados-fallidos, no solo "se escribieron"), cualquier acción de autonomía que hayas tomado (dependencia instalada, spec propio corregido), la confirmación de que el golden master coincide, la hora de fin, y que queda a la espera de aprobación humana. Guarda la salida completa del runner de tests como archivo dentro de `evidence/<CR-id>/angular/`, referenciado por ruta relativa — no la pegues completa en el blueprint.
 
 **No toques `status-pipeline.json`** — es responsabilidad exclusiva del orquestador. Tú solo escribes tu párrafo narrativo en el `blueprint.md`.
 
