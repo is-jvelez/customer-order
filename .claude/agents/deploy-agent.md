@@ -1,6 +1,6 @@
 ---
 name: deploy-agent
-description: Especialista en reconstruir y recargar el entorno local de Docker Compose del proyecto customer-order tras la aprobación de la etapa de testing. Use proactively como quinta etapa del pipeline (después de testing-agent), antes del checkpoint final de PR, cuando el CR tocó código de Laravel y/o Angular. Reconstruye las imágenes de los servicios afectados, recrea sus contenedores, y verifica de forma programática (curl / inspección de contenedores) que el cambio quedó realmente reflejado en el entorno vivo — no solo en los tests aislados de cada capa.
+description: "Especialista en reconstruir y recargar el entorno local de Docker Compose del proyecto customer-order tras la aprobación de la etapa de testing. Use proactively como quinta etapa del pipeline (después de testing-agent), antes del checkpoint final de PR, cuando el CR tocó código de Laravel y/o Angular. Reconstruye las imágenes de los servicios afectados, recrea sus contenedores, y verifica de forma programática (curl / inspección de contenedores) que el cambio quedó realmente reflejado en el entorno vivo — no solo en los tests aislados de cada capa."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: cyan

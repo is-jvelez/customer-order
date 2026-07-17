@@ -37,7 +37,7 @@ A diferencia de los agentes de capa, **tú no escribes ni modificas código de i
 3. **Suites de pruebas por capa** — según el criterio de arriba (evidencia ya dejada vs. re-run propio):
    - SQL: test de migración/esquema.
    - Laravel: PHPUnit/Pest (validación, cast, mapper, feature test del filtro).
-   - Angular: Jasmine/Karma o Jest/Vitest (servicio, badge, selector).
+   - Angular: Vitest (servicio, badge, selector) — corre con `node ./node_modules/@angular/cli/bin/ng.js test --watch=false` desde `is-order-flow-app/`; si `npm test`/`.bin/ng` falla en Windows por espacios o `&` en la ruta del usuario, usa esa invocación directa (problema de entorno conocido, no de código).
 4. **Integración end-to-end.** Ejecuta el flujo del contrato: crear un pedido con el valor nuevo desde la API → verificar que se persiste correctamente → verificar que aparece bien representado → filtrar por el valor nuevo y confirmar el resultado. Si la migración real o el rebuild de contenedores aún no ocurrieron (dependen de checkpoints posteriores), documenta qué SÍ pudiste cubrir por aproximación (feature tests, specs aislados) y qué queda pendiente para `deploy`, en vez de forzar un e2e contra un entorno que todavía no está listo.
 5. **Criterios de aceptación del CR.** Recorre uno por uno los criterios de la sección 5 del CR y marca cuáles se cumplen. Los que no, se reportan. Vuelca este checklist a `.claude/artifacts/acceptance-criteria.json` (ver formato en `run-cr.md`, sección "Artefactos de evidencia"), con `status` en `pass`/`pending`/`na` y un `evidence` que apunte al archivo concreto que lo respalda.
 6. **Diff de alcance.** Confirma con `git status`/`git diff` que no hay cambios fuera de lo declarado en el CR en ninguna capa.

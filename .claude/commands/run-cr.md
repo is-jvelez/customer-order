@@ -15,6 +15,7 @@ CR a procesar: **$ARGUMENTS**
 1. Lee el archivo del CR en `change-requests/$ARGUMENTS.md` (o el nombre que corresponda si trae sufijo). Si no existe, detente y pídele al humano la ruta correcta.
 2. Lee `.claude/artifacts/status-pipeline.json` si ya existe:
    - Si existe y corresponde a este CR, es una **reanudación**: identifica en qué etapa quedó (la primera que no esté `completed`) y retoma desde ahí. No repitas etapas ya `completed` y aprobadas.
+   - Si la etapa a retomar quedó `in_progress` (no `pending`), antes de delegar revisa tú mismo el `git status`/`git diff` de los archivos que le corresponden a esa capa: es posible que el trabajo ya esté hecho en el working tree de una sesión interrumpida y solo falte cerrar la verificación/blueprint. Pásale ese contexto al subagente explícitamente ("el working tree ya trae X, Y, Z modificados — audita y completa, no reimplementes desde cero") en vez de dejar que lo redescubra por su cuenta.
    - Si no existe, es un **arranque nuevo**: créalo con las cuatro etapas en `pending`.
 3. Determina, a partir del CR, **qué capas se afectan** y en qué orden. El orden estándar es: `sql` → `laravel` → `angular` → `testing` → `deploy`. Si el CR declara que una capa no se toca, márcala como no aplicable y sáltala. La etapa `deploy` solo aplica si `laravel` y/o `angular` produjeron cambios de código (si el CR fue puramente SQL sin tocar esas capas, `deploy` no aplica).
 4. Inicializa (o abre) `.claude/artifacts/blueprint.md` con el encabezado del CR, y crea `.claude/artifacts/evidence/$ARGUMENTS/` (ver sección "Artefactos de evidencia" más abajo).
@@ -44,12 +45,13 @@ Este chequeo existe porque en CR-001 el mismo tipo de drift se descubrió tres v
 
 Para cada etapa aplicable, en orden:
 
-1. **Marcar `in_progress`** en `status-pipeline.json` con `started_at` (timestamp actual).
+1. **Marcar `in_progress`** en `status-pipeline.json` con `started_at` (timestamp actual real — obtén la hora real del sistema, ej. `date -Iseconds` o equivalente, en vez de un placeholder fijo; si todas las etapas quedan con la misma hora, la sección de métricas del blueprint pierde valor analítico).
 2. **Delegar al subagente de la capa** correspondiente (`sql-agent`, `laravel-agent`, `angular-agent`, `testing-agent`, `deploy-agent`), pasándole:
    - La ruta del CR.
    - El **contrato de salida de la etapa anterior** (el resumen que el agente previo produjo). Para la primera etapa, solo el CR.
    - Su **presupuesto de autonomía** (R2): recuérdale explícitamente en el encargo que puede, sin pausar ni pedirte aprobación intermedia: correr su propia suite de pruebas las veces que necesite, instalar una dependencia de test/build que falte pero que ya pertenezca a una familia de paquetes declarada en el proyecto en el mismo rango mayor.menor (ej. `@angular/animations` junto a `@angular/core` ya en `^21.2.x`), y corregir bugs en specs/tests que el propio agente escribió en esta misma etapa. Debe registrar cada una de esas acciones en su párrafo del blueprint para que quede auditable. Si necesita tocar código de producción fuera del alcance del CR, una dependencia que no calce en una familia ya declarada, o falla dos veces seguidas intentando resolver algo solo, ahí sí debe detenerse y escalarte la decisión a ti.
    - Para `deploy`, además el `blueprint.md` completo (necesita saber qué archivos tocó cada capa para decidir qué imágenes reconstruir) y confirmación de si la migración SQL (si aplica) ya fue aplicada.
+   - Para `testing`: **no le instruyas de entrada "corre todas las suites desde cero"** — `testing-agent` ya trae su propio criterio de auditoría-primero (evidencia reproducible de cada capa vale como prueba válida; re-ejecutar es opt-in). Pásale la ubicación de la evidencia ya generada por cada capa (`evidence/<CR-id>/{sql,laravel,angular}/`) y déjalo decidir cuándo re-confirmar de primera mano. Forzar una re-ejecución completa por defecto duplica minutos de cómputo ya pagados en Laravel/Angular sin aportar señal nueva — instrúyeselo explícitamente solo si tienes una razón concreta para desconfiar de una etapa (ej. el humano pidió cambios sobre la marcha, o el blueprint de esa etapa no trae comando+salida reproducible).
 3. Cuando el subagente termina, **marcar `awaiting_approval`** en el JSON, y registrar en `status-pipeline.json` (no en el blueprint) los datos de ejecución que el resultado del subagente incluya: duración (`duration_ms`), número de `tool_uses` y tokens, bajo una clave `metrics` de esa etapa. Los usarás al cierre para la sección de métricas del blueprint (ver más abajo).
 4. **CHECKPOINT HUMANO (HITL) — único por etapa:** presenta al humano un resumen conciso de lo que produjo la etapa:
    - Qué archivos generó/modificó (diff resumido).
@@ -66,6 +68,8 @@ Para cada etapa aplicable, en orden:
 ### Aplicar la migración SQL real (dentro del checkpoint de la etapa SQL)
 
 Con R3, esto ya no es una decisión separada que reaparece justo antes de `deploy`: es parte de la misma pregunta del checkpoint de la etapa `sql`. Si el humano aprueba, aplica la migración tú mismo en ese momento (`docker compose up -d flyway`, o el mecanismo del proyecto) y verifica el resultado (`docker logs flyway` / `flyway info`) antes de marcar la etapa `completed`. Si Paso 0.5 detectó una migración previa no rastreada, resuelve eso (ej. `flyway repair` + limpieza de datos de prueba, ambos con aprobación explícita del humano en el mismo checkpoint) antes de continuar. El resultado debe quedar reflejado en el blueprint de la etapa SQL, no en una sección aparte.
+
+**Regla dura de verificación contra la BD real:** cualquier query que module datos (INSERT/UPDATE/DELETE) que tú o cualquier agente ejecuten contra la base real para verificar una migración (ej. probar que un `CHECK` constraint rechaza un valor inválido) **siempre** va envuelta en `BEGIN TRAN` / `ROLLBACK` explícito desde el primer intento — nunca como corrección posterior a un dato de prueba que quedó insertado por accidente. Confirmar el rechazo del motor no requiere dejar el `COMMIT` puesto.
 
 Si el CR es puramente Laravel/Angular (la etapa `sql` no aplica), no hay nada que aplicar aquí — la BD ya está al día.
 

@@ -34,7 +34,7 @@ Ya conoces las convenciones del proyecto porque cargas el CLAUDE.md. Recuerda es
    - El **modal de creación/edición** (formulario).
 2. Estudia cómo está implementado el **badge de Estado** existente y **reutiliza ese patrón exacto** para cualquier badge nuevo — mismo componente/estructura, solo cambian valores y colores.
 3. Estudia cómo se implementa un **filtro existente** en la barra (ej. el de Estado) y **replica ese estilo** para el filtro nuevo.
-4. Identifica la convención de tests del proyecto (Jasmine/Karma o Jest) antes de escribir specs.
+4. El proyecto usa **Vitest** (vía `@angular/build:unit-test` — ver CLAUDE.md sección 6, ya corregido de una referencia obsoleta a Jasmine/Karma). Corre la suite con `node ./node_modules/@angular/cli/bin/ng.js test --watch=false`; si `npm test`/`.bin/ng` falla en Windows por espacios o `&` en la ruta del usuario, usa esa invocación directa sin más diagnóstico — es un problema de entorno conocido, no de tu código.
 
 # Qué produces
 
