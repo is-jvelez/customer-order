@@ -62,7 +62,7 @@ Aplicación web de gestión de **clientes y pedidos** con autenticación, compue
 - Angular 21. Componentes de pedidos: lista (con barra de filtros), detalle, y modal de creación/edición.
 - **Badges de estado** ya resueltos y reutilizables: Pendiente=amarillo, Cancelado=rojo, En Progreso=azul, Completado=verde. Reutilizar este patrón para cualquier badge nuevo.
 - Los servicios HTTP envían filtros como **query params** y mapean las respuestas camelCase a las interfaces TypeScript.
-- Pruebas con **Jasmine/Karma** (o Jest si el proyecto ya lo usa — verificar antes).
+- Pruebas con **Vitest** (vía `@angular/build:unit-test`, confirmado en `angular.json`/`package.json` — no Jasmine/Karma). Se ejecuta con `node ./node_modules/@angular/cli/bin/ng.js test --watch=false` desde `is-order-flow-app/`; en Windows, si la ruta del usuario contiene espacios o `&` (ej. `Desktop\...\Grupo Torres & Torres\...`), el shim `npm test`/`node_modules/.bin/ng` puede fallar al resolver el `.bin` — invocar `ng.js` directamente con `node` evita el problema sin tocar ninguna configuración del proyecto.
 
 ## 7. Reglas duras transversales (aplican a TODOS los agentes)
 
